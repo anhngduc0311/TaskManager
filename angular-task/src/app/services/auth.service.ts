@@ -27,6 +27,7 @@ export class AuthService {
 
   // Computed signal kiểm tra trạng thái đăng nhập
   readonly isLoggedIn = computed(() => this.currentUser() !== null);
+  readonly isAuthenticated = computed(() => this.currentUser() !== null);
 
   constructor() {
     this.loadSession();

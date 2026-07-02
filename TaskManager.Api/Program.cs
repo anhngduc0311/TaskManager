@@ -114,6 +114,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseStaticFiles(); // Kích hoạt phục vụ file tĩnh (ảnh upload)
+
 // Kích hoạt chính sách CORS trước khi Routing/Authorization chạy
 app.UseCors("AllowAngularApp");
 

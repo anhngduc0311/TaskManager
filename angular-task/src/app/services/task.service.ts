@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateTaskDto, TaskItem, TaskItemStatus, UpdateStatusDto, UpdateTaskDto } from '../models/task.model';
+import { CreateTaskDto, TaskItem, TaskItemStatus, UpdateStatusDto, UpdateTaskDto, SprintReportDto } from '../models/task.model';
 
 const getApiBaseUrl = () => {
   if (typeof window !== 'undefined') {
@@ -21,7 +21,7 @@ export class TaskService {
   private http = inject(HttpClient);
 
   // URL gốc của backend Web API .NET Core (lấy từ launchSettings.json của backend)
-  private apiUrl = `${getApiBaseUrl()}/tasks`;
+  public apiUrl = `${getApiBaseUrl()}/tasks`;
 
   /**
    * Lấy danh sách toàn bộ công việc.
@@ -65,5 +65,25 @@ export class TaskService {
    */
   deleteTask(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Tải ảnh đính kèm lên server cho công việc.
+   */
+  uploadAttachment(id: number, file: File): Observable<{ message: string, fileName: string, url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ message: string, fileName: string, url: string }>(
+      `${this.apiUrl}/${id}/attachments`, 
+      formData
+    );
+  }
+
+  /**
+   * Tải dữ liệu báo cáo Sprint từ API.
+   */
+  getSprintReport(sprintId: number): Observable<SprintReportDto> {
+    const reportsUrl = this.apiUrl.replace('/tasks', '/reports');
+    return this.http.get<SprintReportDto>(`${reportsUrl}/sprint/${sprintId}`);
   }
 }
