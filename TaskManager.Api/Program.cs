@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Api.Data;
+using TaskManager.Api.Services;
+using TaskManager.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -19,6 +21,10 @@ builder.Services.AddControllers()
 // Đăng ký AppDbContext sử dụng SQL Server kết nối với Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Đăng ký các Business Services cho quản lý Team và phân quyền
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ITaskPermissionService, TaskPermissionService>();
 
 // Cấu hình Authentication sử dụng JWT Bearer
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -123,5 +129,82 @@ app.UseAuthentication(); // Kích hoạt Authentication middleware
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Seed default project and default members on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // Đảm bảo Database đã được migrate
+    context.Database.Migrate();
+
+    if (!context.Projects.Any())
+    {
+        var defaultProject = new Project
+        {
+            Name = "My Software Team",
+            Code = "PROJ"
+        };
+        context.Projects.Add(defaultProject);
+        context.SaveChanges();
+
+        // Thêm tất cả user hiện có làm Admin của project này
+        var users = context.Users.ToList();
+        foreach (var u in users)
+        {
+            context.ProjectMembers.Add(new ProjectMember
+            {
+                ProjectId = defaultProject.Id,
+                UserId = u.Id,
+                Role = ProjectRole.Admin,
+                JoinedDate = System.DateTime.UtcNow
+            });
+        }
+
+        // Gán tất cả TaskItem hiện có chưa có ProjectId vào Project này
+        var tasks = context.TaskItems.Where(t => t.ProjectId == null).ToList();
+        foreach (var t in tasks)
+        {
+            t.ProjectId = defaultProject.Id;
+        }
+        context.SaveChanges();
+    }
+    else
+    {
+        // Nếu đã có Project nhưng có Task nào chưa gán ProjectId, gán về Project đầu tiên
+        var defaultProject = context.Projects.First();
+        var tasks = context.TaskItems.Where(t => t.ProjectId == null).ToList();
+        if (tasks.Any())
+        {
+            foreach (var t in tasks)
+            {
+                t.ProjectId = defaultProject.Id;
+            }
+            context.SaveChanges();
+        }
+
+        // Kiểm tra xem tất cả Users đã là thành viên dự án này chưa, nếu chưa thì thêm vào làm Admin để có thể gán việc
+        var users = context.Users.ToList();
+        var members = context.ProjectMembers.Where(pm => pm.ProjectId == defaultProject.Id).Select(pm => pm.UserId).ToHashSet();
+        bool membersChanged = false;
+        foreach (var u in users)
+        {
+            if (!members.Contains(u.Id))
+            {
+                context.ProjectMembers.Add(new ProjectMember
+                {
+                    ProjectId = defaultProject.Id,
+                    UserId = u.Id,
+                    Role = ProjectRole.Admin,
+                    JoinedDate = System.DateTime.UtcNow
+                });
+                membersChanged = true;
+            }
+        }
+        if (membersChanged)
+        {
+            context.SaveChanges();
+        }
+    }
+}
 
 app.Run();

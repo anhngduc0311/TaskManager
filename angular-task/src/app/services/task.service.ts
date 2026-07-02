@@ -61,6 +61,13 @@ export class TaskService {
   }
 
   /**
+   * Cập nhật người nhận việc (AssigneeId) cho công việc.
+   */
+  updateAssignee(id: number, assigneeId: number | null): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/assignee`, { assigneeId });
+  }
+
+  /**
    * Xóa một công việc.
    */
   deleteTask(id: number): Observable<any> {

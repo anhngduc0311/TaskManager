@@ -66,9 +66,12 @@ namespace TaskManager.Api.Models
 
         public DateTime? CompletedDate { get; set; } // Ngày hoàn thành (phục vụ biểu đồ Burndown)
 
-        // Khóa ngoại liên kết tới bảng Users
-        public int? UserId { get; set; }
-        public User? User { get; set; }
+        // Khóa ngoại liên kết tới bảng Users (Assignee & Reporter)
+        public int? AssigneeId { get; set; }
+        public ApplicationUser? Assignee { get; set; }
+
+        public int? ReporterId { get; set; }
+        public ApplicationUser? Reporter { get; set; }
 
         // --- 1. Thông tin Dự án IT ---
         public int? ProjectId { get; set; } // Dạng Nullable để đảm bảo tương thích ngược dữ liệu cũ

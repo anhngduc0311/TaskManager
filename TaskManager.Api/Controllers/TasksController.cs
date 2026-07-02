@@ -10,20 +10,34 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManager.Api.Data;
 using TaskManager.Api.Models;
+using TaskManager.Api.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskManager.Api.Controllers
 {
+    public class UpdateAssigneeDto
+    {
+        public int? AssigneeId { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController] // Tự động kiểm tra tính hợp lệ của Model
     [Authorize] // Yêu cầu Đăng nhập cho tất cả các API trong controller này
     public class TasksController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ITaskPermissionService _permissionService;
+        private readonly IProjectService _projectService;
 
         // Tiêm DbContext thông qua Dependency Injection (DI)
-        public TasksController(AppDbContext context)
+        public TasksController(
+            AppDbContext context, 
+            ITaskPermissionService permissionService, 
+            IProjectService projectService)
         {
             _context = context;
+            _permissionService = permissionService;
+            _projectService = projectService;
         }
 
         private int GetCurrentUserId()
@@ -54,7 +68,7 @@ namespace TaskManager.Api.Controllers
                 var rootTasks = await _context.TaskItems
                                               .Include(t => t.SubTasks)
                                               .Include(t => t.CustomValues)
-                                              .Where(t => t.UserId == userId && t.ParentTaskId == null)
+                                              .Where(t => (t.AssigneeId == userId || t.ReporterId == userId) && t.ParentTaskId == null)
                                               .ToListAsync();
 
                 var response = rootTasks.Select(task => MapToDetailsDto(task, allCustomFields)).ToList();
@@ -86,7 +100,7 @@ namespace TaskManager.Api.Controllers
                                              .Include(t => t.SubTasks)
                                              .Include(t => t.CustomValues)
                                                  .ThenInclude(cv => cv.CustomField)
-                                             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+                                             .FirstOrDefaultAsync(t => t.Id == id && (t.AssigneeId == userId || t.ReporterId == userId));
 
                 if (taskItem == null)
                 {
@@ -127,7 +141,8 @@ namespace TaskManager.Api.Controllers
                     Status = TaskItemStatus.Todo,
                     CreatedDate = DateTime.UtcNow,
                     DueDate = createTaskDto.DueDate,
-                    UserId = userId,
+                    AssigneeId = userId,
+                    ReporterId = userId,
                     ProjectId = createTaskDto.ProjectId,
                     SprintId = createTaskDto.SprintId,
                     StoryPoints = createTaskDto.StoryPoints,
@@ -170,11 +185,18 @@ namespace TaskManager.Api.Controllers
             {
                 int userId = GetCurrentUserId();
 
+                // Kiểm tra quyền Sửa/Xóa Task
+                var canEdit = await _permissionService.CanEditOrDeleteTaskAsync(id, userId);
+                if (!canEdit)
+                {
+                    return StatusCode(403, new { Message = "Bạn không có quyền sửa đổi công việc này. Chỉ Admin của dự án hoặc người tạo mới có quyền sửa." });
+                }
+
                 // Load Task cha cùng các Subtask hiện tại và Custom Values hiện tại
                 var taskItem = await _context.TaskItems
                                              .Include(t => t.SubTasks)
                                              .Include(t => t.CustomValues)
-                                             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+                                             .FirstOrDefaultAsync(t => t.Id == id && (t.AssigneeId == userId || t.ReporterId == userId));
 
                 if (taskItem == null)
                 {
@@ -267,7 +289,8 @@ namespace TaskManager.Api.Controllers
                             DueDate = subDto.DueDate,
                             CreatedDate = DateTime.UtcNow,
                             ParentTaskId = taskItem.Id,
-                            UserId = userId,
+                            AssigneeId = userId,
+                            ReporterId = userId,
                             ProjectId = taskItem.ProjectId // Đồng bộ theo project của task cha
                         };
                         _context.TaskItems.Add(newSub);
@@ -298,6 +321,52 @@ namespace TaskManager.Api.Controllers
         }
 
         /// <summary>
+        /// PUT: api/tasks/{id}/assignee
+        /// Cập nhật AssigneeId cho một Task (Chỉ cho phép chọn User thuộc cùng Project đó).
+        /// </summary>
+        [HttpPut("{id}/assignee")]
+        public async Task<IActionResult> UpdateAssignee(int id, [FromBody] UpdateAssigneeDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                int currentUserId = GetCurrentUserId();
+
+                // 1. Kiểm tra quyền của người dùng hiện tại trước khi cập nhật Assignee (Admin dự án hoặc Reporter)
+                var hasPermission = await _permissionService.CanEditOrDeleteTaskAsync(id, currentUserId);
+                if (!hasPermission)
+                {
+                    return StatusCode(403, new { Message = "Bạn không có quyền sửa đổi người nhận việc của công việc này." });
+                }
+
+                // 2. Thực hiện cập nhật Assignee thông qua ProjectService
+                await _projectService.UpdateTaskAssigneeAsync(id, dto.AssigneeId);
+
+                return Ok(new { Message = "Cập nhật người nhận việc thành công.", AssigneeId = dto.AssigneeId });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Lỗi hệ thống khi cập nhật người nhận việc: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
         /// POST: api/tasks/{id}/attachments
         /// Upload hình ảnh đính kèm cho Task, lưu trữ cục bộ tại thư mục wwwroot/uploads/attachments/
         /// </summary>
@@ -308,8 +377,15 @@ namespace TaskManager.Api.Controllers
             {
                 int userId = GetCurrentUserId();
 
+                // Kiểm tra quyền Sửa/Xóa Task trước khi đính kèm ảnh
+                var canEdit = await _permissionService.CanEditOrDeleteTaskAsync(id, userId);
+                if (!canEdit)
+                {
+                    return StatusCode(403, new { Message = "Bạn không có quyền sửa đổi để tải ảnh đính kèm lên công việc này." });
+                }
+
                 // Xác thực xem Task có tồn tại và thuộc sở hữu của User không
-                var taskExists = await _context.TaskItems.AnyAsync(t => t.Id == id && t.UserId == userId);
+                var taskExists = await _context.TaskItems.AnyAsync(t => t.Id == id && (t.AssigneeId == userId || t.ReporterId == userId));
                 if (!taskExists)
                 {
                     return NotFound(new { Message = $"Không tìm thấy công việc với Id = {id}" });
@@ -376,8 +452,16 @@ namespace TaskManager.Api.Controllers
             try
             {
                 int userId = GetCurrentUserId();
+
+                // Kiểm tra quyền cập nhật trạng thái
+                var canUpdateStatus = await _permissionService.CanUpdateTaskStatusAsync(id, userId);
+                if (!canUpdateStatus)
+                {
+                    return StatusCode(403, new { Message = "Bạn không có quyền cập nhật trạng thái của công việc này. Bạn phải là Admin/Member của dự án hoặc Assignee/Reporter." });
+                }
+
                 var taskItem = await _context.TaskItems
-                                             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+                                             .FirstOrDefaultAsync(t => t.Id == id && (t.AssigneeId == userId || t.ReporterId == userId));
 
                 if (taskItem == null)
                 {
@@ -409,8 +493,16 @@ namespace TaskManager.Api.Controllers
             try
             {
                 int userId = GetCurrentUserId();
+
+                // Kiểm tra quyền Sửa/Xóa Task
+                var canDelete = await _permissionService.CanEditOrDeleteTaskAsync(id, userId);
+                if (!canDelete)
+                {
+                    return StatusCode(403, new { Message = "Bạn không có quyền xóa công việc này. Chỉ Admin của dự án hoặc người tạo mới có quyền xóa." });
+                }
+
                 var taskItem = await _context.TaskItems
-                                             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+                                             .FirstOrDefaultAsync(t => t.Id == id && (t.AssigneeId == userId || t.ReporterId == userId));
                 if (taskItem == null)
                 {
                     return NotFound(new { Message = $"Không tìm thấy công việc với Id = {id} để xóa." });
@@ -437,7 +529,7 @@ namespace TaskManager.Api.Controllers
             try
             {
                 int userId = GetCurrentUserId();
-                return _context.TaskItems.Any(e => e.Id == id && e.UserId == userId);
+                return _context.TaskItems.Any(e => e.Id == id && (e.AssigneeId == userId || e.ReporterId == userId));
             }
             catch
             {
@@ -458,7 +550,8 @@ namespace TaskManager.Api.Controllers
                 Status = task.Status,
                 CreatedDate = task.CreatedDate,
                 DueDate = task.DueDate,
-                UserId = task.UserId,
+                AssigneeId = task.AssigneeId,
+                ReporterId = task.ReporterId,
                 ProjectId = task.ProjectId,
                 SprintId = task.SprintId,
                 StoryPoints = task.StoryPoints,

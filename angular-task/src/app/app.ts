@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from './services/task.service';
 import { AuthService } from './services/auth.service';
+import { ProjectMemberService, ProjectMember } from './services/project-member.service';
 import { TaskItem, TaskItemStatus, TaskPriority, TaskType, CustomFieldType, CreateTaskDto, UpdateTaskDto, CustomFieldUpdateDto, SubTaskUpdateDto, SprintReportDto } from './models/task.model';
 
 import { TaskTableComponent } from './components/task-table.component';
@@ -19,6 +20,7 @@ export class App implements OnInit {
   // Tiêm các services bằng inject()
   private taskService = inject(TaskService);
   protected readonly authService = inject(AuthService);
+  private memberService = inject(ProjectMemberService);
 
   @ViewChild('editorDiv') editorDivElement?: ElementRef<HTMLDivElement>;
 
@@ -91,6 +93,11 @@ export class App implements OnInit {
   protected readonly searchQuery = signal('');
   protected readonly selectedAssignee = signal('all');
   protected readonly selectedLabel = signal('all');
+  protected readonly selectedAssigneeIds = signal<number[]>([]);
+  protected readonly projectMembers = signal<ProjectMember[]>([]);
+  protected readonly isAddPeopleModalOpen = signal(false);
+  protected readonly addPeopleEmail = signal('');
+  protected readonly isAddingPeople = signal(false);
 
   // Trạng thái kéo thả
   protected draggedTask: TaskItem | null = null;
@@ -150,7 +157,11 @@ export class App implements OnInit {
       );
     }
 
-    if (assignee !== 'all') {
+    // Lọc theo Avatar assignees (Signal hỗ trợ đa tuyển chọn)
+    const assigneeIds = this.selectedAssigneeIds();
+    if (assigneeIds.length > 0) {
+      list = list.filter(t => t.assigneeId && assigneeIds.includes(t.assigneeId));
+    } else if (assignee !== 'all') {
       list = list.filter(t => {
         const tAssignee = this.getTaskAssignee(t);
         if (assignee === 'current') {
@@ -279,10 +290,77 @@ export class App implements OnInit {
     this.taskService.getTasks().subscribe({
       next: (data) => {
         this.tasks.set(data);
+        // Tự động tìm projectId từ task đầu tiên để load thành viên cho filter bar
+        const taskWithProject = data.find(t => t.projectId);
+        const pid = taskWithProject?.projectId || 1;
+        this.loadProjectMembers(pid);
       },
       error: (err) => {
         console.error('Lỗi khi tải danh sách công việc:', err);
         this.errorMessage.set('Không thể kết nối đến backend API. Hãy đảm bảo dự án backend dotnet đang chạy.');
+      }
+    });
+  }
+
+  protected loadProjectMembers(projectId: number): void {
+    this.memberService.getProjectMembers(projectId).subscribe({
+      next: (members) => {
+        this.projectMembers.set(members);
+      },
+      error: (err) => {
+        console.error('Lỗi khi tải thành viên dự án cho filter bar:', err);
+      }
+    });
+  }
+
+  protected toggleAssigneeFilter(userId: number): void {
+    const current = this.selectedAssigneeIds();
+    if (current.includes(userId)) {
+      this.selectedAssigneeIds.set(current.filter(id => id !== userId));
+    } else {
+      this.selectedAssigneeIds.set([...current, userId]);
+    }
+  }
+
+  protected isAssigneeFilterActive(userId: number): boolean {
+    return this.selectedAssigneeIds().includes(userId);
+  }
+
+  protected clearAssigneeFilters(): void {
+    this.selectedAssigneeIds.set([]);
+  }
+
+  protected openAddPeopleModal(): void {
+    this.addPeopleEmail.set('');
+    this.isAddPeopleModalOpen.set(true);
+  }
+
+  protected closeAddPeopleModal(): void {
+    this.isAddPeopleModalOpen.set(false);
+  }
+
+  protected submitAddPeople(): void {
+    const email = this.addPeopleEmail().trim();
+    if (!email) {
+      alert('Vui lòng nhập email.');
+      return;
+    }
+
+    const taskWithProject = this.tasks().find(t => t.projectId);
+    const pid = taskWithProject?.projectId || 1;
+
+    this.isAddingPeople.set(true);
+    this.memberService.inviteMember(pid, email).subscribe({
+      next: (res) => {
+        this.isAddingPeople.set(false);
+        this.closeAddPeopleModal();
+        this.successMessage.set(res.message || 'Đã thêm thành viên vào dự án.');
+        setTimeout(() => this.successMessage.set(null), 3000);
+        this.loadProjectMembers(pid);
+      },
+      error: (err) => {
+        this.isAddingPeople.set(false);
+        alert(err.error?.message || 'Có lỗi xảy ra khi mời thành viên.');
       }
     });
   }

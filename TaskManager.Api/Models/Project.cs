@@ -14,5 +14,6 @@ namespace TaskManager.Api.Models
         // Navigation Properties
         public ICollection<TaskItem> Tasks { get; set; } = new List<TaskItem>();
         public ICollection<Sprint> Sprints { get; set; } = new List<Sprint>();
+        public ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
     }
 }

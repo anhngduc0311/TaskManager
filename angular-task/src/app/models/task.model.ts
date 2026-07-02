@@ -61,7 +61,8 @@ export interface TaskItem {
   status: TaskItemStatus;
   createdDate: string;
   dueDate?: string;
-  userId?: number;
+  assigneeId?: number;
+  reporterId?: number;
 
   projectId?: number;
   sprintId?: number;

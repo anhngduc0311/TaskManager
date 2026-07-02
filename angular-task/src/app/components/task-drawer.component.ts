@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TaskService } from '../services/task.service';
 import { AuthService } from '../services/auth.service';
 import { TaskItem, TaskItemStatus, TaskPriority, TaskType, CustomFieldType, UpdateTaskDto, CustomFieldUpdateDto, SubTaskUpdateDto } from '../models/task.model';
+import { AssigneeSelectorComponent } from './assignee-selector.component';
 
 interface CommentItem {
   author: string;
@@ -20,7 +21,7 @@ interface HistoryItem {
 @Component({
   selector: 'app-task-drawer',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AssigneeSelectorComponent],
   template: `
     <!-- Lớp phủ nền mờ (Backdrop Overlay) -->
     <div class="drawer-backdrop" [class.open]="task !== null" (click)="close()"></div>
@@ -232,17 +233,11 @@ interface HistoryItem {
             <!-- Người xử lý (Assignee) -->
             <div class="attribute-group">
               <label class="attribute-label">Người thực hiện</label>
-              <select
-                [ngModel]="taskAssignee()"
-                (ngModelChange)="onAssigneeChange($event)"
-                class="attribute-control"
-              >
-                <option value="unassigned">Chưa phân công</option>
-                <option [value]="authService.currentUser()">{{ authService.currentUser() }} (Tôi)</option>
-                <option value="Alex">Alex</option>
-                <option value="Sarah">Sarah</option>
-                <option value="John">John</option>
-              </select>
+              <app-assignee-selector
+                [projectId]="editingProjectId()"
+                [currentAssigneeId]="taskAssigneeId()"
+                (onAssigneeChanged)="onAssigneeChange($event)"
+              ></app-assignee-selector>
             </div>
 
             <!-- Nhãn (Labels) -->
@@ -1044,7 +1039,7 @@ export class TaskDrawerComponent {
   protected readonly editingTaskType = signal<TaskType>(TaskType.Task);
   protected readonly editingCustomFields = signal<CustomFieldUpdateDto[]>([]);
   protected readonly editingSubTasks = signal<SubTaskUpdateDto[]>([]);
-  protected readonly taskAssignee = signal('unassigned');
+  protected readonly taskAssigneeId = signal<number | null>(null);
   protected readonly taskLabelsInput = signal('');
   
   // Biến giữ nội dung HTML mô tả ban đầu (ngăn con trỏ nhảy ngược khi đang nhập)
@@ -1106,12 +1101,12 @@ export class TaskDrawerComponent {
     this.uploadedAttachments.set([]);
     this.extractImagesFromDescription(task.description || '');
 
-    // Khởi tạo người gán và nhãn từ localStorage
+    // Khởi tạo người gán và nhãn
     if (task.id > 0) {
-      this.taskAssignee.set(localStorage.getItem(`task_assignee_${task.id}`) || this.authService.currentUser() || 'unassigned');
+      this.taskAssigneeId.set(task.assigneeId || null);
       this.taskLabelsInput.set(localStorage.getItem(`task_labels_${task.id}`) || '');
     } else {
-      this.taskAssignee.set(this.authService.currentUser() || 'unassigned');
+      this.taskAssigneeId.set(null);
       this.taskLabelsInput.set('');
     }
 
@@ -1120,11 +1115,20 @@ export class TaskDrawerComponent {
     this.loadHistoryFromStorage(task.id);
   }
 
-  protected onAssigneeChange(name: string): void {
+  protected onAssigneeChange(assigneeId: number | null): void {
+    this.taskAssigneeId.set(assigneeId);
     if (this.task && this.task.id > 0) {
-      this.taskAssignee.set(name);
-      localStorage.setItem(`task_assignee_${this.task.id}`, name);
-      this.addHistoryLog(`đã gán công việc cho: ${name}`);
+      this.taskService.updateAssignee(this.task.id, assigneeId).subscribe({
+        next: () => {
+          this.addHistoryLog(`đã cập nhật người thực hiện công việc`);
+          this.onSaved.emit();
+        },
+        error: (err) => {
+          console.error('Lỗi khi cập nhật người thực hiện:', err);
+          alert(err.error?.message || 'Không thể cập nhật người thực hiện công việc.');
+          this.taskAssigneeId.set(this.task?.assigneeId || null);
+        }
+      });
     }
   }
 

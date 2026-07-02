@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TaskManager.Api.Models
 {
-    public class User
+    public class ApplicationUser
     {
         [Key]
         public int Id { get; set; }
@@ -28,7 +28,13 @@ namespace TaskManager.Api.Models
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        // Navigation property for 1-N relationship: A user can own multiple tasks.
-        public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+        // Mối quan hệ: Một User có thể được phân công nhiều Task (Assignee)
+        public ICollection<TaskItem> TasksAssigned { get; set; } = new List<TaskItem>();
+
+        // Mối quan hệ: Một User có thể tạo/báo cáo nhiều Task (Reporter)
+        public ICollection<TaskItem> TasksReported { get; set; } = new List<TaskItem>();
+
+        // Mối quan hệ: Một User có thể là thành viên của nhiều dự án
+        public ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
     }
 }

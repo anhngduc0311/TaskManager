@@ -226,6 +226,54 @@
                 (ngModelChange)="searchQuery.set($event)"
                 class="pl-9 pr-3 py-1.5 text-body-md border border-outline-variant rounded hover:bg-surface-container-low transition-colors w-48 focus:border-primary focus:ring-0" />
             </div>
+
+            <!-- Project Member Avatars (Filter Bar) -->
+            <div class="flex items-center gap-1.5 bg-surface-container px-3 py-1 rounded-full border border-outline-variant/60">
+              <span class="text-body-sm font-semibold text-on-surface-variant mr-1">Assignees:</span>
+              
+              <div class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  *ngFor="let member of projectMembers()"
+                  (click)="toggleAssigneeFilter(member.userId)"
+                  [title]="member.username + ' (' + member.email + ')'"
+                  class="relative group cursor-pointer"
+                >
+                  <!-- Avatar -->
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold uppercase transition-all duration-200"
+                    [class]="isAssigneeFilterActive(member.userId) 
+                      ? 'bg-primary text-white ring-2 ring-primary-container ring-offset-2 ring-offset-surface' 
+                      : 'bg-primary/10 text-primary border border-primary/20 hover:scale-105 hover:bg-primary/20'"
+                  >
+                    {{ member.username.substring(0, 2) }}
+                  </div>
+                  <!-- Active Check Dot -->
+                  <span *ngIf="isAssigneeFilterActive(member.userId)" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-surface animate-pulse"></span>
+                </button>
+
+                <!-- Add People Button -->
+                <button
+                  type="button"
+                  (click)="openAddPeopleModal()"
+                  title="Thêm thành viên vào dự án"
+                  class="w-7 h-7 rounded-full border border-dashed border-outline-variant hover:border-primary/50 text-on-surface-variant hover:text-primary flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <span class="material-symbols-outlined text-[16px]">person_add</span>
+                </button>
+              </div>
+
+              <!-- Clear Filters Button -->
+              <button
+                type="button"
+                *ngIf="selectedAssigneeIds().length > 0"
+                (click)="clearAssigneeFilters()"
+                class="ml-1 text-[11px] font-bold text-primary hover:text-primary-hover flex items-center gap-0.5 transition-colors cursor-pointer"
+              >
+                <span class="material-symbols-outlined text-sm">close</span>
+                Bỏ lọc
+              </button>
+            </div>
             <div class="ml-auto flex items-center gap-sm">
               <span class="text-body-sm text-on-surface-variant">Group by</span>
               <select class="text-body-md border-outline-variant rounded focus:ring-0 focus:border-primary">
@@ -509,3 +557,64 @@
 <!-- SLIDE-OVER DRAWER -->
 <app-task-drawer *ngIf="isEditModalOpen()" [task]="selectedTaskForEdit()" (onClose)="closeEditModal()"
   (onSaved)="loadTasks()"></app-task-drawer>
+
+<!-- ADD PEOPLE TO PROJECT MODAL -->
+<div *ngIf="isAddPeopleModalOpen()" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-md p-lg shadow-2xl mx-4 transform transition-all animate-slide-up">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between mb-md border-b border-outline-variant pb-md">
+      <h3 class="text-headline-sm font-headline-sm text-on-surface flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-xl">person_add</span>
+        Thêm người vào dự án
+      </h3>
+      <button 
+        type="button" 
+        (click)="closeAddPeopleModal()" 
+        class="p-1 hover:bg-surface-container rounded-full transition-colors cursor-pointer text-outline hover:text-on-surface"
+      >
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="space-y-4">
+      <p class="text-body-sm text-on-surface-variant leading-relaxed">
+        Nhập email của thành viên bạn muốn mời vào dự án. Người dùng này sẽ được thêm trực tiếp vào danh sách thành viên với vai trò là <strong>Member</strong>.
+      </p>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-label-sm font-semibold text-on-surface-variant">Địa chỉ Email</label>
+        <input
+          type="email"
+          placeholder="example@email.com"
+          [ngModel]="addPeopleEmail()"
+          (ngModelChange)="addPeopleEmail.set($event)"
+          [disabled]="isAddingPeople()"
+          class="w-full px-3 py-2 text-body-md bg-surface-container-low border border-outline rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 disabled:opacity-50"
+          (keyup.enter)="submitAddPeople()"
+        />
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-sm mt-lg pt-md border-t border-outline-variant">
+      <button
+        type="button"
+        (click)="closeAddPeopleModal()"
+        [disabled]="isAddingPeople()"
+        class="px-4 py-2 text-label-md font-bold text-outline hover:bg-surface-container rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+      >
+        Hủy bỏ
+      </button>
+      <button
+        type="button"
+        (click)="submitAddPeople()"
+        [disabled]="isAddingPeople() || !addPeopleEmail().trim()"
+        class="px-4 py-2 text-label-md font-bold bg-primary text-white hover:bg-primary-hover rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+      >
+        <span *ngIf="isAddingPeople()" class="inline-block animate-spin mr-1">⏳</span>
+        {{ isAddingPeople() ? 'Đang lưu...' : 'Xác nhận' }}
+      </button>
+    </div>
+  </div>
+</div>

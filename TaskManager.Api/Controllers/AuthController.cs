@@ -43,7 +43,7 @@ namespace TaskManager.Api.Controllers
                     return BadRequest(new { Message = "Email đã được đăng ký bởi tài khoản khác." });
                 }
 
-                var user = new User
+                var user = new ApplicationUser
                 {
                     Username = registerDto.Username,
                     Email = registerDto.Email,
@@ -54,6 +54,20 @@ namespace TaskManager.Api.Controllers
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+
+                // Tự động thêm người dùng mới đăng ký vào dự án mặc định làm Member
+                var defaultProject = await _context.Projects.FirstOrDefaultAsync();
+                if (defaultProject != null)
+                {
+                    _context.ProjectMembers.Add(new ProjectMember
+                    {
+                        ProjectId = defaultProject.Id,
+                        UserId = user.Id,
+                        Role = ProjectRole.Member,
+                        JoinedDate = DateTime.UtcNow
+                    });
+                    await _context.SaveChangesAsync();
+                }
 
                 return Ok(new { Message = "Đăng ký tài khoản thành công." });
             }
@@ -93,7 +107,7 @@ namespace TaskManager.Api.Controllers
             }
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings.GetValue<string>("SecretKey");

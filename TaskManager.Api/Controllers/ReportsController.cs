@@ -46,7 +46,7 @@ namespace TaskManager.Api.Controllers
 
                 // Lấy tất cả task của user
                 var userTasks = await _context.TaskItems
-                                              .Where(t => t.UserId == userId)
+                                              .Where(t => t.AssigneeId == userId)
                                               .ToListAsync();
 
                 Sprint? sprint = null;

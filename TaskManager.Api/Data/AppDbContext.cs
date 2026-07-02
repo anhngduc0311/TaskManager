@@ -18,11 +18,12 @@ namespace TaskManager.Api.Data
 
         // Khai báo các DbSet đại diện cho thực thể trong Database
         public DbSet<TaskItem> TaskItems { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Sprint> Sprints { get; set; }
         public DbSet<CustomField> CustomFields { get; set; }
         public DbSet<TaskCustomValue> TaskCustomValues { get; set; }
+        public DbSet<ProjectMember> ProjectMembers { get; set; }
 
         /// <summary>
         /// Hàm cấu hình các thiết lập nâng cao cho các bảng bằng Fluent API.
@@ -31,8 +32,8 @@ namespace TaskManager.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Cấu hình bảng Users
-            modelBuilder.Entity<User>(entity =>
+            // Cấu hình bảng Users (ApplicationUser)
+            modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("Users");
                 entity.HasKey(u => u.Id);
@@ -53,6 +54,28 @@ namespace TaskManager.Api.Data
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(150);
                 entity.Property(p => p.Code).IsRequired().HasMaxLength(10);
+            });
+
+            // Cấu hình bảng ProjectMembers (Many-to-Many trung gian giữa Project và ApplicationUser)
+            modelBuilder.Entity<ProjectMember>(entity =>
+            {
+                entity.ToTable("ProjectMembers");
+                entity.HasKey(pm => new { pm.ProjectId, pm.UserId });
+
+                entity.Property(pm => pm.Role)
+                      .HasConversion<string>()
+                      .HasMaxLength(20)
+                      .IsRequired();
+
+                entity.HasOne(pm => pm.Project)
+                      .WithMany(p => p.ProjectMembers)
+                      .HasForeignKey(pm => pm.ProjectId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(pm => pm.User)
+                      .WithMany(u => u.ProjectMembers)
+                      .HasForeignKey(pm => pm.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Cấu hình bảng Sprints
@@ -108,11 +131,17 @@ namespace TaskManager.Api.Data
                       .HasDefaultValueSql("GETUTCDATE()")
                       .IsRequired();
 
-                // Cấu hình quan hệ 1-N giữa User và TaskItem
-                entity.HasOne(t => t.User)
-                      .WithMany(u => u.TaskItems)
-                      .HasForeignKey(t => t.UserId)
-                      .OnDelete(DeleteBehavior.SetNull); // Xóa User thì không xóa Task, chỉ đặt UserId = null
+                // Cấu hình quan hệ 1-N giữa ApplicationUser (Assignee) và TaskItem
+                entity.HasOne(t => t.Assignee)
+                      .WithMany(u => u.TasksAssigned)
+                      .HasForeignKey(t => t.AssigneeId)
+                      .OnDelete(DeleteBehavior.Restrict); // Tránh lỗi cascade delete vòng lặp
+
+                // Cấu hình quan hệ 1-N giữa ApplicationUser (Reporter) và TaskItem
+                entity.HasOne(t => t.Reporter)
+                      .WithMany(u => u.TasksReported)
+                      .HasForeignKey(t => t.ReporterId)
+                      .OnDelete(DeleteBehavior.Restrict); // Tránh lỗi cascade delete vòng lặp
 
                 // Cấu hình quan hệ Project - TaskItem
                 entity.HasOne(t => t.Project)
