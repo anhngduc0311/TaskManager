@@ -67,7 +67,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
 
@@ -104,7 +104,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
 
@@ -155,7 +155,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
 
@@ -293,7 +293,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
 
@@ -362,7 +362,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống khi tải file: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống khi tải file: {ex.Message}" });
             }
         }
 
@@ -395,7 +395,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
 
@@ -427,7 +427,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
 

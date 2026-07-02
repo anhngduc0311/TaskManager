@@ -1395,6 +1395,12 @@ export class TaskDrawerComponent {
 
   private uploadFile(file: File): void {
     if (!this.task) return;
+
+    if (this.task.id === 0) {
+      alert('Vui lòng lưu công việc trước khi tải ảnh đính kèm.');
+      return;
+    }
+
     this.isUploading.set(true);
 
     this.taskService.uploadAttachment(this.task.id, file).subscribe({
@@ -1415,7 +1421,8 @@ export class TaskDrawerComponent {
       error: (err) => {
         this.isUploading.set(false);
         console.error('Lỗi upload file:', err);
-        alert('Không thể tải ảnh đính kèm lên.');
+        const msg = err.error?.message || err.error || 'Không thể tải ảnh đính kèm lên.';
+        alert(msg);
       }
     });
   }

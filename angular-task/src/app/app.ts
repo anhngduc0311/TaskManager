@@ -699,6 +699,11 @@ export class App implements OnInit {
     const task = this.selectedTaskForEdit();
     if (!task) return;
 
+    if (task.id === 0) {
+      alert('Vui lòng lưu công việc trước khi tải ảnh đính kèm.');
+      return;
+    }
+
     this.isUploading.set(true);
     this.taskService.uploadAttachment(task.id, file).subscribe({
       next: (res) => {
@@ -711,7 +716,8 @@ export class App implements OnInit {
       error: (err) => {
         this.isUploading.set(false);
         console.error('Lỗi khi tải ảnh lên:', err);
-        alert(err.error?.message || 'Không thể tải ảnh lên.');
+        const msg = err.error?.message || err.error || 'Không thể tải ảnh đính kèm lên.';
+        alert(msg);
       }
     });
   }

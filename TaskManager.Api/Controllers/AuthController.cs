@@ -59,7 +59,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống khi đăng ký: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống khi đăng ký: {ex.Message}" });
             }
         }
 
@@ -89,7 +89,7 @@ namespace TaskManager.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống khi đăng nhập: {ex.Message}");
+                return StatusCode(500, new { Message = $"Lỗi hệ thống khi đăng nhập: {ex.Message}" });
             }
         }
 
