@@ -82,6 +82,11 @@ export class App implements OnInit {
   // New Subtask local field inside modal
   protected newSubTaskTitle = '';
 
+  // Helper: trả về style cho icon filled/unfilled
+  protected filledIconStyle(active: boolean): any {
+    return { 'font-variation-settings': active ? '"FILL" 1' : '"FILL" 0' };
+  }
+
   // Bộ lọc dạng Signal
   protected readonly searchQuery = signal('');
   protected readonly selectedAssignee = signal('all');

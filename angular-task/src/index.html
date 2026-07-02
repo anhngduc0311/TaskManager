@@ -1,73 +1,137 @@
 <!doctype html>
-<html lang="vi" class="dark">
+<html class="light" lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TaskManager - Jira Dark Mode</title>
+  <title>Jira - My Software Team</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
+      darkMode: "class",
       theme: {
         extend: {
-          colors: {
-            // Hệ màu nguyên bản từ Jira Dark Mode (Jira Template code.html)
-            'surface': '#1d2125',            // Nền chính của ứng dụng
-            'surface-hover': '#22272b',      // Hover lên các ô
-            'surface-raised': '#282e33',     // Nền các container/thẻ nổi bật
-            'surface-overlay': '#384047',    // Nền modal/dropdown
-            'border-jira': '#30353d',        // Đường viền tối tiêu chuẩn Jira
-            'text-main': '#dee2ec',          // Màu chữ sáng chính
-            'text-muted': '#8b919e',         // Màu chữ phụ/mờ
-            
-            // Các màu sắc tương tác và loại thẻ
-            'primary-jira': '#579dff',       // Xanh dương Jira (primary)
-            'primary-hover': '#85b8ff',
-            'success-jira': '#10b981',
-            'warning-jira': '#f59e0b',
-            'danger-jira': '#f87171',
-            'epic-jira': '#d8b4fe',
-            'story-jira': '#93c5fd',
-            'bug-jira': '#f87171'
+          "colors": {
+            "primary-container": "#0052cc",
+            "on-primary-container": "#c4d2ff",
+            "outline": "#737685",
+            "surface": "#f9f9ff",
+            "on-primary-fixed": "#001848",
+            "secondary": "#0059b8",
+            "on-tertiary-fixed": "#001f27",
+            "secondary-container": "#0071e6",
+            "surface-container-highest": "#d6e3ff",
+            "on-secondary-fixed": "#001b3f",
+            "inverse-surface": "#20314b",
+            "on-secondary-fixed-variant": "#004590",
+            "on-secondary-container": "#fefcff",
+            "outline-variant": "#c3c6d6",
+            "background": "#f9f9ff",
+            "on-error-container": "#93000a",
+            "inverse-primary": "#b2c5ff",
+            "on-surface": "#091c35",
+            "on-tertiary-container": "#76e2ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-dim": "#cadbfc",
+            "inverse-on-surface": "#ecf0ff",
+            "surface-bright": "#f9f9ff",
+            "tertiary-container": "#006477",
+            "primary": "#003d9b",
+            "surface-container": "#e7eeff",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "primary-fixed-dim": "#b2c5ff",
+            "tertiary-fixed-dim": "#48d7f9",
+            "surface-variant": "#d6e3ff",
+            "surface-container-high": "#dfe8ff",
+            "on-tertiary-fixed-variant": "#004e5d",
+            "tertiary-fixed": "#afecff",
+            "surface-tint": "#0c56d0",
+            "on-tertiary": "#ffffff",
+            "on-primary": "#ffffff",
+            "surface-container-low": "#f0f3ff",
+            "primary-fixed": "#dae2ff",
+            "on-surface-variant": "#434654",
+            "secondary-fixed": "#d7e2ff",
+            "on-primary-fixed-variant": "#0040a2",
+            "error-container": "#ffdad6",
+            "on-background": "#091c35",
+            "tertiary": "#004b59",
+            "error": "#ba1a1a",
+            "secondary-fixed-dim": "#abc7ff"
           },
-          fontFamily: {
-            sans: ['Inter', 'Hanken Grotesk', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "xs": "4px",
+            "sm": "8px",
+            "lg": "24px",
+            "margin-desktop": "24px",
+            "xl": "32px",
+            "gutter": "16px",
+            "unit": "4px",
+            "margin-mobile": "16px",
+            "md": "16px"
+          },
+          "fontFamily": {
+            "title-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-caps": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "title-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+            "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+            "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
           }
         }
       }
     }
   </script>
 
-  <!-- Google Fonts & Material Symbols -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
   <style>
-    /* Reset scrollbar cho đồng bộ tối */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+    }
+    .kanban-column {
+      min-width: 280px;
+      width: 100%;
+    }
+    .custom-shadow {
+      box-shadow: 0 1px 3px rgba(9, 30, 66, 0.13);
+    }
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #1d2125;
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #384047;
+      background: #DFE1E6;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #454f59;
+      background: #B3BAC5;
     }
   </style>
 </head>
-<body class="bg-surface text-text-main font-sans min-h-screen antialiased select-none">
+<body class="bg-surface font-body-md text-on-surface">
   <app-root></app-root>
 </body>
 </html>

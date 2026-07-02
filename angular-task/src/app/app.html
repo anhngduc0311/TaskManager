@@ -1,509 +1,467 @@
-<!-- KHUNG CHƯƠNG TRÌNH CHÍNH (MAIN WORKSPACE LAYOUT) -->
-<div class="min-h-screen flex flex-col bg-surface text-text-main">
-  
-  <!-- 1. GIAO DIỆN XÁC THỰC (AUTHENTICATION PANEL) -->
-  <div *ngIf="!authService.isAuthenticated()" class="flex-1 flex items-center justify-center p-md bg-surface">
-    <div class="w-full max-w-[420px] bg-surface-raised border border-border-jira rounded-xl p-8 shadow-2xl transition-all duration-300">
-      
-      <!-- Brand Logo -->
-      <div class="flex flex-col items-center mb-8">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="material-symbols-outlined text-primary-jira text-4xl">view_kanban</span>
-          <span class="font-sans font-extrabold text-2xl tracking-tight text-white">TaskManager</span>
+<!-- AUTH PANEL (Unauthenticated) -->
+<div *ngIf="!authService.isAuthenticated()" class="min-h-screen flex items-center justify-center bg-surface p-md">
+  <div class="w-full max-w-[420px] bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-lg">
+    <div class="flex flex-col items-center mb-8">
+      <div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-white mb-3">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+      </div>
+      <span class="text-display-lg font-display-lg text-primary">Jira</span>
+      <p class="text-body-sm text-on-surface-variant font-semibold tracking-wide uppercase mt-1">Software Project</p>
+    </div>
+
+    <div *ngIf="errorMessage()" class="bg-error-container border border-error/30 text-on-error-container px-4 py-3 rounded-lg text-body-sm mb-5 font-medium flex items-start gap-2">
+      <span class="material-symbols-outlined text-md mt-0.5">error</span>
+      <span>{{ errorMessage() }}</span>
+    </div>
+    <div *ngIf="successMessage()" class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg text-body-sm mb-5 font-medium flex items-start gap-2">
+      <span class="material-symbols-outlined text-md mt-0.5">check_circle</span>
+      <span>{{ successMessage() }}</span>
+    </div>
+
+    <form (submit)="handleAuthSubmit(); $event.preventDefault()" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-label-caps font-label-caps text-on-surface-variant">Username or Email</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">person</span>
+          <input type="text" [ngModel]="authUsername()" (ngModelChange)="authUsername.set($event)" name="username"
+            placeholder="Enter your username..." required
+            class="w-full bg-surface border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-0 text-body-md transition-colors" />
         </div>
-        <p class="text-text-muted text-sm font-semibold tracking-wide uppercase">Jira Premium Space</p>
       </div>
 
-      <!-- Error / Success Alert -->
-      <div *ngIf="errorMessage()" class="bg-red-500/10 border border-red-500/30 text-danger-jira px-4 py-3 rounded-lg text-sm mb-5 font-medium flex items-start gap-2">
-        <span class="material-symbols-outlined text-md mt-0.5">error</span>
-        <span>{{ errorMessage() }}</span>
-      </div>
-      <div *ngIf="successMessage()" class="bg-green-500/10 border border-green-500/30 text-success-jira px-4 py-3 rounded-lg text-sm mb-5 font-medium flex items-start gap-2">
-        <span class="material-symbols-outlined text-md mt-0.5">check_circle</span>
-        <span>{{ successMessage() }}</span>
-      </div>
-
-      <!-- Auth Form -->
-      <form (submit)="handleAuthSubmit(); $event.preventDefault()" class="flex flex-col gap-4">
-        <!-- Username -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-text-muted text-xs font-bold uppercase tracking-wider">Tên đăng nhập / Email</label>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-3 text-text-muted text-lg">person</span>
-            <input 
-              type="text" 
-              [ngModel]="authUsername()" 
-              (ngModelChange)="authUsername.set($event)" 
-              name="username"
-              placeholder="Nhập tài khoản (hoặc admin)..."
-              class="w-full bg-surface border border-border-jira rounded-lg py-2.5 pl-10 pr-4 text-text-main placeholder-text-muted focus:outline-none focus:border-primary-jira focus:ring-2 focus:ring-primary-jira/20 text-sm transition-all"
-              required
-            />
-          </div>
+      <div *ngIf="isRegisterMode()" class="flex flex-col gap-1.5">
+        <label class="text-label-caps font-label-caps text-on-surface-variant">Email Address</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">mail</span>
+          <input type="email" [ngModel]="authEmail()" (ngModelChange)="authEmail.set($event)" name="email"
+            placeholder="name@example.com" required
+            class="w-full bg-surface border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-0 text-body-md transition-colors" />
         </div>
-
-        <!-- Email (Register only) -->
-        <div *ngIf="isRegisterMode()" class="flex flex-col gap-1.5">
-          <label class="text-text-muted text-xs font-bold uppercase tracking-wider">Địa chỉ Email</label>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-3 text-text-muted text-lg">mail</span>
-            <input 
-              type="email" 
-              [ngModel]="authEmail()" 
-              (ngModelChange)="authEmail.set($event)" 
-              name="email"
-              placeholder="name@example.com"
-              class="w-full bg-surface border border-border-jira rounded-lg py-2.5 pl-10 pr-4 text-text-main placeholder-text-muted focus:outline-none focus:border-primary-jira focus:ring-2 focus:ring-primary-jira/20 text-sm transition-all"
-              required
-            />
-          </div>
-        </div>
-
-        <!-- Password -->
-        <div class="flex flex-col gap-1.5">
-          <div class="flex justify-between items-center">
-            <label class="text-text-muted text-xs font-bold uppercase tracking-wider">Mật khẩu</label>
-            <a href="javascript:void(0)" class="text-primary-jira hover:underline text-xs font-semibold" *ngIf="!isRegisterMode()">Quên mật khẩu?</a>
-          </div>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-3 text-text-muted text-lg">lock</span>
-            <input 
-              type="password" 
-              [ngModel]="authPassword()" 
-              (ngModelChange)="authPassword.set($event)" 
-              name="password"
-              placeholder="••••••••"
-              class="w-full bg-surface border border-border-jira rounded-lg py-2.5 pl-10 pr-4 text-text-main placeholder-text-muted focus:outline-none focus:border-primary-jira focus:ring-2 focus:ring-primary-jira/20 text-sm transition-all"
-              required
-            />
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <button 
-          type="submit" 
-          class="w-full bg-primary-jira text-surface font-bold py-3 rounded-lg hover:bg-primary-hover active:scale-[0.98] transition-all text-sm mt-3"
-        >
-          {{ isRegisterMode() ? 'Tạo tài khoản mới' : 'Đăng nhập vào Jira' }}
-        </button>
-      </form>
-
-      <!-- Toggle mode links -->
-      <div class="mt-6 text-center text-sm border-t border-border-jira pt-5">
-        <span class="text-text-muted">
-          {{ isRegisterMode() ? 'Đã có tài khoản?' : 'Chưa có tài khoản trên không gian này?' }}
-        </span>
-        <button 
-          (click)="isRegisterMode.set(!isRegisterMode())" 
-          class="text-primary-jira font-bold ml-1.5 hover:underline focus:outline-none"
-        >
-          {{ isRegisterMode() ? 'Đăng nhập ngay' : 'Đăng ký tài khoản' }}
-        </button>
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <div class="flex justify-between items-center">
+          <label class="text-label-caps font-label-caps text-on-surface-variant">Password</label>
+          <a href="javascript:void(0)" class="text-primary hover:underline text-body-sm font-semibold" *ngIf="!isRegisterMode()">Forgot password?</a>
+        </div>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
+          <input type="password" [ngModel]="authPassword()" (ngModelChange)="authPassword.set($event)" name="password"
+            placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required
+            class="w-full bg-surface border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-on-surface placeholder-outline focus:outline-none focus:border-primary focus:ring-0 text-body-md transition-colors" />
+        </div>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-primary-container text-white font-bold py-3 rounded-lg hover:opacity-90 active:scale-[0.98] transition-all text-body-md mt-3">
+        {{ isRegisterMode() ? 'Create Account' : 'Log in to Jira' }}
+      </button>
+    </form>
+
+    <div class="mt-6 text-center border-t border-outline-variant pt-5">
+      <span class="text-body-sm text-on-surface-variant">
+        {{ isRegisterMode() ? 'Already have an account?' : "Don't have an account?" }}
+      </span>
+      <button (click)="isRegisterMode.set(!isRegisterMode())"
+        class="text-primary font-bold ml-1.5 hover:underline focus:outline-none text-body-sm">
+        {{ isRegisterMode() ? 'Log in' : 'Sign up' }}
+      </button>
     </div>
   </div>
+</div>
 
-  <!-- 2. GIAO DIỆN LÀM VIỆC CHÍNH (AUTHENTICATED WORKSPACE) -->
-  <ng-container *ngIf="authService.isAuthenticated()">
-    
-    <!-- 2.1 THANH ĐIỀU HƯỚNG TRÊN (TOP NAVIGATION HEADER) -->
-    <header class="h-14 bg-surface-raised border-b border-border-jira flex items-center justify-between px-md shrink-0 z-20">
-      
-      <!-- Left Header: Brand & Navigation -->
-      <div class="flex items-center gap-6">
-        <!-- Logo -->
-        <div class="flex items-center gap-2 cursor-pointer">
-          <span class="material-symbols-outlined text-primary-jira text-3xl">view_kanban</span>
-          <span class="font-sans font-extrabold text-lg text-white tracking-tight">Jira Software</span>
+<!-- AUTHENTICATED WORKSPACE -->
+<ng-container *ngIf="authService.isAuthenticated()">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-surface-container-lowest border-b border-outline-variant fixed top-0 w-full z-50 h-16 flex justify-between items-center px-md">
+    <div class="flex items-center gap-lg">
+      <div class="flex items-center gap-sm">
+        <div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+          <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
         </div>
-
-        <!-- Desktop Menu Options -->
-        <nav class="hidden md:flex items-center gap-4 text-text-main font-semibold text-sm">
-          <div class="flex items-center gap-1 hover:bg-surface-overlay px-3 py-1.5 rounded cursor-pointer transition-colors">
-            <span>Dự án</span>
-            <span class="material-symbols-outlined text-xs text-text-muted mt-0.5">keyboard_arrow_down</span>
-          </div>
-          <div class="flex items-center gap-1 hover:bg-surface-overlay px-3 py-1.5 rounded cursor-pointer transition-colors">
-            <span>Gần đây</span>
-            <span class="material-symbols-outlined text-xs text-text-muted mt-0.5">keyboard_arrow_down</span>
-          </div>
-          <div class="flex items-center gap-1 hover:bg-surface-overlay px-3 py-1.5 rounded cursor-pointer transition-colors">
-            <span>Đã đánh dấu sao</span>
-            <span class="material-symbols-outlined text-xs text-text-muted mt-0.5">keyboard_arrow_down</span>
-          </div>
-          <div class="flex items-center gap-1 hover:bg-surface-overlay px-3 py-1.5 rounded cursor-pointer transition-colors">
-            <span>Bộ lọc</span>
-            <span class="material-symbols-outlined text-xs text-text-muted mt-0.5">keyboard_arrow_down</span>
-          </div>
-          <button 
-            (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
-            class="bg-primary-container text-on-primary-container font-label-md text-label-md px-md py-1.5 rounded hover:opacity-90 active:opacity-80 transition-all font-semibold"
-          >
-            Create
-          </button>
-        </nav>
+        <span class="text-title-sm font-title-sm font-black text-primary">Jira</span>
       </div>
-
-      <!-- Right Header: Global Search & User actions -->
-      <div class="flex items-center gap-4">
-        <!-- Search bar -->
-        <div class="relative hidden sm:block">
-          <span class="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-sm">search</span>
-          <input 
-            type="text" 
-            placeholder="Tìm kiếm nhanh..." 
-            class="bg-surface border border-border-jira rounded py-1.5 pl-9 pr-4 text-xs text-text-main placeholder-text-muted focus:outline-none focus:border-primary-jira focus:w-60 w-44 transition-all duration-200"
-          />
-        </div>
-
-        <!-- Settings Icon -->
-        <button class="w-8 h-8 rounded-full hover:bg-surface-overlay flex items-center justify-center transition-colors">
-          <span class="material-symbols-outlined text-text-main text-lg">settings</span>
+      <div class="relative hidden md:block">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+        <input type="text" placeholder="Search" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+          class="bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-1.5 w-64 text-body-md focus:border-primary focus:ring-0 transition-colors" />
+      </div>
+    </div>
+    <div class="flex items-center gap-md">
+      <button (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
+        class="bg-primary-container text-white px-lg py-1.5 rounded-lg text-body-md font-semibold hover:opacity-90 transition-opacity">
+        Create
+      </button>
+      <div class="flex items-center gap-sm text-on-surface-variant">
+        <button class="p-2 hover:bg-surface-container rounded-full transition-colors relative" title="Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
         </button>
-
-        <!-- User Info Dropdown -->
-        <div class="flex items-center gap-2 pl-2 border-l border-border-jira">
-          <div class="w-8 h-8 rounded-full bg-primary-jira/20 border border-primary-jira text-primary-jira font-extrabold text-xs flex items-center justify-center uppercase cursor-pointer" title="Thông tin người dùng">
+        <button class="p-2 hover:bg-surface-container rounded-full transition-colors" title="Help">
+          <span class="material-symbols-outlined">help</span>
+        </button>
+        <button class="p-2 hover:bg-surface-container rounded-full transition-colors" title="Settings">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        <div class="ml-2 flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary/10 border border-outline-variant flex items-center justify-center text-primary font-extrabold text-xs uppercase cursor-pointer" title="User info">
             {{ authService.currentUser()?.substring(0,2) || 'JD' }}
           </div>
-          <button 
-            (click)="logout()" 
-            class="text-xs text-text-muted hover:text-danger-jira font-bold transition-colors"
-            title="Đăng xuất khỏi tài khoản"
-          >
-            Đăng xuất
+          <button (click)="logout()" class="text-body-sm text-on-surface-variant hover:text-error font-semibold transition-colors" title="Log out">
+            Log out
           </button>
         </div>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- 2.2 THÂN LÀM VIỆC CHÍNH CHỨA SIDEBAR & CONTENT (BODY GRID) -->
-    <div class="flex-1 flex overflow-hidden">
-      
-      <!-- 2.2.1 THANH DANH MỤC BÊN HÔNG (LEFT SIDEBAR NAVIGATION) -->
-      <aside class="w-60 bg-surface-raised border-r border-border-jira shrink-0 flex flex-col z-10">
-        
-        <!-- Project Context Title -->
-        <div class="p-4 border-b border-border-jira flex items-center gap-3">
-          <div class="w-10 h-10 rounded bg-gradient-to-br from-indigo-500 to-primary-jira flex items-center justify-center text-white font-black text-sm shadow">
-            PJ
+  <div class="flex pt-16 min-h-screen">
+    <!-- SIDEBAR -->
+    <aside class="bg-surface-container-low border-r border-outline-variant fixed left-0 h-[calc(100vh-64px)] w-[240px] flex flex-col py-md overflow-y-auto hidden md:flex">
+      <div class="px-md mb-lg">
+        <div class="flex items-center gap-sm mb-1">
+          <div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
           </div>
-          <div class="overflow-hidden">
-            <h4 class="font-bold text-sm text-white truncate">Project Alpha</h4>
-            <p class="text-text-muted text-xs font-medium">Phần mềm quản lý IT</p>
+          <div>
+            <h2 class="text-label-caps font-label-caps uppercase tracking-wider text-on-surface-variant">Software Project</h2>
+            <h1 class="text-body-md font-bold text-on-surface">My Software Team</h1>
           </div>
         </div>
+      </div>
 
-        <!-- Navigation Links (View modes) -->
-        <nav class="flex-1 p-2 flex flex-col gap-1 overflow-y-auto">
-          
-          <!-- Lựa chọn 1: Bảng Kanban -->
-          <button 
-            [class.bg-surface-overlay]="viewMode() === 'kanban'"
-            (click)="viewMode.set('kanban')"
-            class="relative w-full flex items-center gap-3 px-3 py-2.5 rounded text-left font-semibold text-sm transition-colors hover:bg-surface-overlay"
-          >
-            <div *ngIf="viewMode() === 'kanban'" class="active-sidebar-indicator"></div>
-            <span class="material-symbols-outlined text-lg" [class.text-primary-jira]="viewMode() === 'kanban'">dashboard</span>
-            <span>Bảng Kanban</span>
-          </button>
+      <nav class="flex-1 space-y-1">
+        <button (click)="switchViewMode('kanban')"
+          class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
+          [class.bg-secondary-container!]="viewMode() === 'kanban'"
+          [class.text-on-secondary-container!]="viewMode() === 'kanban'"
+          [class.font-bold!]="viewMode() === 'kanban'"
+          [class.border-l-4!]="viewMode() === 'kanban'"
+          [class.border-primary!]="viewMode() === 'kanban'">
+          <span class="material-symbols-outlined" [ngStyle]="filledIconStyle(viewMode() === 'kanban')">view_kanban</span>
+          <span class="text-body-sm font-body-sm">Board</span>
+        </button>
+        <button (click)="switchViewMode('table')"
+          class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
+          [class.bg-secondary-container!]="viewMode() === 'table'"
+          [class.text-on-secondary-container!]="viewMode() === 'table'"
+          [class.font-bold!]="viewMode() === 'table'"
+          [class.border-l-4!]="viewMode() === 'table'"
+          [class.border-primary!]="viewMode() === 'table'">
+          <span class="material-symbols-outlined">list_alt</span>
+          <span class="text-body-sm font-body-sm">List</span>
+        </button>
+        <button (click)="switchViewMode('report')"
+          class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
+          [class.bg-secondary-container!]="viewMode() === 'report'"
+          [class.text-on-secondary-container!]="viewMode() === 'report'"
+          [class.font-bold!]="viewMode() === 'report'"
+          [class.border-l-4!]="viewMode() === 'report'"
+          [class.border-primary!]="viewMode() === 'report'">
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="text-body-sm font-body-sm">Reports</span>
+        </button>
+      </nav>
 
-          <!-- Lựa chọn 2: Backlog dạng cây -->
-          <button 
-            [class.bg-surface-overlay]="viewMode() === 'table'"
-            (click)="viewMode.set('table')"
-            class="relative w-full flex items-center gap-3 px-3 py-2.5 rounded text-left font-semibold text-sm transition-colors hover:bg-surface-overlay"
-          >
-            <div *ngIf="viewMode() === 'table'" class="active-sidebar-indicator"></div>
-            <span class="material-symbols-outlined text-lg" [class.text-primary-jira]="viewMode() === 'table'">list_alt</span>
-            <span>Backlog (Dạng cây)</span>
-          </button>
+      <div class="mt-auto border-t border-outline-variant pt-md">
+        <button class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="text-body-sm font-body-sm">Settings</span>
+        </button>
+      </div>
+    </aside>
 
-          <!-- Lựa chọn 3: Báo cáo & Lộ trình -->
-          <button 
-            [class.bg-surface-overlay]="viewMode() === 'report'"
-            (click)="viewMode.set('report')"
-            class="relative w-full flex items-center gap-3 px-3 py-2.5 rounded text-left font-semibold text-sm transition-colors hover:bg-surface-overlay"
-          >
-            <div *ngIf="viewMode() === 'report'" class="active-sidebar-indicator"></div>
-            <span class="material-symbols-outlined text-lg" [class.text-primary-jira]="viewMode() === 'report'">analytics</span>
-            <span>Roadmap & Báo cáo</span>
-          </button>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 md:ml-[240px] p-lg">
+      <!-- Error Banner -->
+      <div *ngIf="errorMessage()" class="bg-error-container border border-error/30 text-on-error-container px-4 py-3 rounded-lg text-body-sm mb-5 font-semibold flex items-start gap-2">
+        <span class="material-symbols-outlined mt-0.5">error</span>
+        <span>{{ errorMessage() }}</span>
+      </div>
 
-        </nav>
-
-        <!-- Sidebar Footer Space -->
-        <div class="p-4 border-t border-border-jira text-center">
-          <p class="text-xs text-text-muted font-medium">Bạn đang ở vùng dự án</p>
-        </div>
-      </aside>
-
-      <!-- 2.2.2 KHU VỰC NỘI DUNG CHÍNH (MAIN SCROLLABLE CONTENT VIEW) -->
-      <main class="flex-1 overflow-y-auto p-6 bg-surface">
-        
-        <!-- BÀI VIẾT LƯU Ý / THÔNG BÁO LỖI -->
-        <div *ngIf="errorMessage()" class="bg-red-500/10 border border-red-500/30 text-danger-jira px-4 py-3 rounded-lg text-sm mb-5 font-semibold flex items-start gap-2">
-          <span class="material-symbols-outlined mt-0.5">error</span>
-          <span>{{ errorMessage() }}</span>
-        </div>
-
-        <!-- ---------------------------------------------------- -->
-        <!-- VIEW 1: BẢNG KANBAN TIÊU CHUẨN (BOARD VIEW MODE) -->
-        <!-- ---------------------------------------------------- -->
-        <div *ngIf="viewMode() === 'kanban'" class="flex flex-col gap-6 h-full">
-          
-          <!-- Board Header -->
-          <div class="flex justify-between items-center border-b border-border-jira pb-4">
+      <!-- ==================== KANBAN BOARD VIEW ==================== -->
+      <div *ngIf="viewMode() === 'kanban'">
+        <!-- Project Header -->
+        <div class="mb-lg">
+          <div class="flex items-center justify-between mb-md">
             <div>
-              <h2 class="text-xl font-extrabold text-white">Bảng Kanban dự án</h2>
-              <p class="text-text-muted text-sm mt-0.5">Quản lý trực quan các trạng thái công việc và kéo thả linh hoạt</p>
+              <nav class="flex gap-1 text-on-surface-variant text-body-sm mb-1">
+                <a class="hover:underline" href="javascript:void(0)">Projects</a>
+                <span>/</span>
+                <a class="hover:underline" href="javascript:void(0)">My Software Team</a>
+              </nav>
+              <h1 class="text-headline-md font-headline-md text-on-surface">Board</h1>
             </div>
-            
-            <!-- Quick Add Task Bar -->
-            <div class="flex gap-2">
-              <input 
-                type="text" 
-                [(ngModel)]="newQuickTaskTitle" 
-                (keyup.enter)="addNewTask()"
-                placeholder="Thêm nhanh việc cần làm..."
-                class="bg-surface-raised border border-border-jira rounded px-3 py-1.5 text-xs text-text-main placeholder-text-muted focus:outline-none focus:border-primary-jira w-60"
-              />
-              <button 
-                (click)="addNewTask()" 
-                class="bg-primary-jira text-surface font-bold text-xs px-4 py-1.5 rounded hover:bg-primary-hover active:scale-[0.97] transition-all"
-              >
-                Thêm nhanh
-              </button>
+            <div class="flex gap-sm">
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">share</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">bolt</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">comment</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">open_in_full</span></button>
             </div>
           </div>
 
-          <!-- Kanban Grid Columns -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 items-start">
-            
-            <!-- Cột 1: CẦN LÀM (TODO) -->
-            <div 
-              (dragover)="$event.preventDefault()" 
-              (drop)="onTaskDrop(TaskStatus.Todo)"
-              class="kanban-column"
-            >
-              <div class="flex justify-between items-center border-b border-border-jira pb-2 px-1">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-primary-jira"></span>
-                  <span class="font-bold text-sm tracking-wide uppercase text-white">Cần làm</span>
-                </div>
-                <span class="bg-surface-raised border border-border-jira text-text-muted text-xs font-semibold px-2 py-0.5 rounded-full">
-                  {{ getTasksByStatus(TaskStatus.Todo).length }}
-                </span>
-              </div>
-
-              <!-- List card -->
-              <div class="flex flex-col gap-3 min-h-[300px] py-1">
-                <div 
-                  *ngFor="let task of getTasksByStatus(TaskStatus.Todo)"
-                  [draggable]="true"
-                  (dragstart)="onDragStart(task)"
-                  (click)="openEditModal(task)"
-                  class="task-card"
-                >
-                  <div class="flex justify-between items-start gap-2 mb-2">
-                    <span class="saas-badge type-badge text-[10px] font-bold px-2 py-0.5 rounded" [attr.data-type]="task.taskType">
-                      {{ task.taskType }}
-                    </span>
-                    <span class="text-[10px] font-mono text-text-muted">#{{ task.id }}</span>
-                  </div>
-                  <h4 class="font-semibold text-sm text-text-main line-clamp-2 hover:text-primary-jira transition-colors mb-3">
-                    {{ task.title }}
-                  </h4>
-                  <div class="flex justify-between items-center pt-2 border-t border-border-jira/30">
-                    <div class="flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-xs" [class.text-danger-jira]="task.priority === TaskPriority.Critical" [class.text-warning-jira]="task.priority === TaskPriority.High" [class.text-primary-jira]="task.priority === TaskPriority.Medium">
-                        priority_high
-                      </span>
-                      <span class="text-[10px] font-semibold text-text-muted uppercase">{{ task.priority }}</span>
-                    </div>
-                    <!-- Assignee Initials badge -->
-                    <div class="w-6 h-6 rounded-full bg-surface-overlay text-[10px] font-bold flex items-center justify-center border border-border-jira text-text-main uppercase" [title]="getTaskAssignee(task)">
-                      {{ getTaskAssignee(task).substring(0,2) }}
-                    </div>
-                  </div>
-                </div>
-                <div *ngIf="getTasksByStatus(TaskStatus.Todo).length === 0" class="text-center text-text-muted text-xs py-8 border border-dashed border-border-jira/50 rounded-lg">
-                  Kéo thả task vào đây
-                </div>
-              </div>
+          <!-- Filters -->
+          <div class="flex flex-wrap items-center gap-md mb-gutter">
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+              <input type="text" placeholder="Search board" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                class="pl-9 pr-3 py-1.5 text-body-md border border-outline-variant rounded hover:bg-surface-container-low transition-colors w-48 focus:border-primary focus:ring-0" />
             </div>
-
-            <!-- Cột 2: ĐANG THỰC HIỆN (IN PROGRESS) -->
-            <div 
-              (dragover)="$event.preventDefault()" 
-              (drop)="onTaskDrop(TaskStatus.InProgress)"
-              class="kanban-column"
-            >
-              <div class="flex justify-between items-center border-b border-border-jira pb-2 px-1">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-warning-jira"></span>
-                  <span class="font-bold text-sm tracking-wide uppercase text-white">Đang thực hiện</span>
-                </div>
-                <span class="bg-surface-raised border border-border-jira text-text-muted text-xs font-semibold px-2 py-0.5 rounded-full">
-                  {{ getTasksByStatus(TaskStatus.InProgress).length }}
-                </span>
-              </div>
-
-              <!-- List card -->
-              <div class="flex flex-col gap-3 min-h-[300px] py-1">
-                <div 
-                  *ngFor="let task of getTasksByStatus(TaskStatus.InProgress)"
-                  [draggable]="true"
-                  (dragstart)="onDragStart(task)"
-                  (click)="openEditModal(task)"
-                  class="task-card"
-                >
-                  <div class="flex justify-between items-start gap-2 mb-2">
-                    <span class="saas-badge type-badge text-[10px] font-bold px-2 py-0.5 rounded" [attr.data-type]="task.taskType">
-                      {{ task.taskType }}
-                    </span>
-                    <span class="text-[10px] font-mono text-text-muted">#{{ task.id }}</span>
-                  </div>
-                  <h4 class="font-semibold text-sm text-text-main line-clamp-2 hover:text-primary-jira transition-colors mb-3">
-                    {{ task.title }}
-                  </h4>
-                  <div class="flex justify-between items-center pt-2 border-t border-border-jira/30">
-                    <div class="flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-xs" [class.text-danger-jira]="task.priority === TaskPriority.Critical" [class.text-warning-jira]="task.priority === TaskPriority.High" [class.text-primary-jira]="task.priority === TaskPriority.Medium">
-                        priority_high
-                      </span>
-                      <span class="text-[10px] font-semibold text-text-muted uppercase">{{ task.priority }}</span>
-                    </div>
-                    <!-- Assignee Initials badge -->
-                    <div class="w-6 h-6 rounded-full bg-surface-overlay text-[10px] font-bold flex items-center justify-center border border-border-jira text-text-main uppercase" [title]="getTaskAssignee(task)">
-                      {{ getTaskAssignee(task).substring(0,2) }}
-                    </div>
-                  </div>
-                </div>
-                <div *ngIf="getTasksByStatus(TaskStatus.InProgress).length === 0" class="text-center text-text-muted text-xs py-8 border border-dashed border-border-jira/50 rounded-lg">
-                  Kéo thả task vào đây
-                </div>
-              </div>
-            </div>
-
-            <!-- Cột 3: ĐÃ HOÀN THÀNH (DONE) -->
-            <div 
-              (dragover)="$event.preventDefault()" 
-              (drop)="onTaskDrop(TaskStatus.Done)"
-              class="kanban-column"
-            >
-              <div class="flex justify-between items-center border-b border-border-jira pb-2 px-1">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-success-jira"></span>
-                  <span class="font-bold text-sm tracking-wide uppercase text-white">Đã hoàn thành</span>
-                </div>
-                <span class="bg-surface-raised border border-border-jira text-text-muted text-xs font-semibold px-2 py-0.5 rounded-full">
-                  {{ getTasksByStatus(TaskStatus.Done).length }}
-                </span>
-              </div>
-
-              <!-- List card -->
-              <div class="flex flex-col gap-3 min-h-[300px] py-1">
-                <div 
-                  *ngFor="let task of getTasksByStatus(TaskStatus.Done)"
-                  [draggable]="true"
-                  (dragstart)="onDragStart(task)"
-                  (click)="openEditModal(task)"
-                  class="task-card opacity-70"
-                >
-                  <div class="flex justify-between items-start gap-2 mb-2">
-                    <span class="saas-badge type-badge text-[10px] font-bold px-2 py-0.5 rounded" [attr.data-type]="task.taskType">
-                      {{ task.taskType }}
-                    </span>
-                    <span class="text-[10px] font-mono text-text-muted line-through">#{{ task.id }}</span>
-                  </div>
-                  <h4 class="font-semibold text-sm text-text-muted line-clamp-2 line-through mb-3">
-                    {{ task.title }}
-                  </h4>
-                  <div class="flex justify-between items-center pt-2 border-t border-border-jira/30">
-                    <div class="flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-xs text-text-muted">
-                        done_all
-                      </span>
-                      <span class="text-[10px] font-semibold text-text-muted uppercase">DONE</span>
-                    </div>
-                    <!-- Assignee Initials badge -->
-                    <div class="w-6 h-6 rounded-full bg-surface-overlay text-[10px] font-bold flex items-center justify-center border border-border-jira text-text-muted uppercase" [title]="getTaskAssignee(task)">
-                      {{ getTaskAssignee(task).substring(0,2) }}
-                    </div>
-                  </div>
-                </div>
-                <div *ngIf="getTasksByStatus(TaskStatus.Done).length === 0" class="text-center text-text-muted text-xs py-8 border border-dashed border-border-jira/50 rounded-lg">
-                  Kéo thả task vào đây
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ---------------------------------------------------- -->
-        <!-- VIEW 2: BACKLOG ĐẠNG CÂY (TABLE VIEW MODE) -->
-        <!-- ---------------------------------------------------- -->
-        <div *ngIf="viewMode() === 'table'" class="flex flex-col gap-6">
-          <div class="border-b border-border-jira pb-4">
-            <h2 class="text-xl font-extrabold text-white">Backlog Quản trị (Dạng cây)</h2>
-            <p class="text-text-muted text-sm mt-0.5">Dễ dàng xem phả hệ liên kết cha-con, lọc theo các độ ưu tiên và các Epic của đội phát triển</p>
-          </div>
-          
-          <app-task-table 
-            [tasks]="tasks()" 
-            (onEdit)="openEditModal($event)" 
-            (onDelete)="deleteTask($event)"
-            (onStatusChange)="onQuickStatusChange($event)"
-          ></app-task-table>
-        </div>
-
-        <!-- ---------------------------------------------------- -->
-        <!-- VIEW 3: BÁO CÁO & ROADMAP (REPORT VIEW MODE) -->
-        <!-- ---------------------------------------------------- -->
-        <div *ngIf="viewMode() === 'report'" class="flex flex-col gap-6">
-          
-          <!-- View Sprint Selection header -->
-          <div class="border-b border-border-jira pb-4 flex justify-between items-center flex-wrap gap-4">
-            <div>
-              <h2 class="text-xl font-extrabold text-white">Lộ trình & Báo cáo Sprint</h2>
-              <p class="text-text-muted text-sm mt-0.5">Theo dõi biểu đồ Burndown Chart, tốc độ phát triển và Timeline Gantt Roadmap trực quan</p>
-            </div>
-            
-            <div class="flex items-center gap-3">
-              <label class="text-xs font-bold text-text-muted uppercase">Xem Sprint:</label>
-              <select 
-                [ngModel]="selectedSprintId()"
-                (ngModelChange)="onSprintChange($event)"
-                class="bg-surface-raised border border-border-jira rounded px-3 py-1.5 text-xs text-text-main focus:outline-none focus:border-primary-jira font-semibold cursor-pointer"
-              >
-                <option [value]="0">Sprint Hiện Tại (Đang chạy)</option>
-                <option [value]="1">Sprint 1</option>
-                <option [value]="2">Sprint 2</option>
-                <option [value]="3">Sprint 3</option>
+            <div class="ml-auto flex items-center gap-sm">
+              <span class="text-body-sm text-on-surface-variant">Group by</span>
+              <select class="text-body-md border-outline-variant rounded focus:ring-0 focus:border-primary">
+                <option>None</option>
+                <option>Assignee</option>
+                <option>Epic</option>
               </select>
             </div>
           </div>
-
-          <app-task-dashboard 
-            [tasks]="tasks()" 
-            [report]="sprintReport()"
-          ></app-task-dashboard>
         </div>
 
-      </main>
-    </div>
+        <!-- Kanban Board Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter items-start overflow-x-auto pb-lg">
+          <!-- TO DO -->
+          <div class="kanban-column bg-surface-container-low rounded-xl p-md flex flex-col gap-md min-h-[600px]">
+            <div class="flex items-center justify-between px-xs">
+              <div class="flex items-center gap-sm">
+                <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">TO DO</span>
+                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{ getTasksByStatus(TaskStatus.Todo).length }}</span>
+              </div>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
 
-  </ng-container>
-</div>
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.Todo)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.Todo)"
+                [draggable]="true"
+                (dragstart)="onDragStart(task, $event)"
+                (click)="openEditModal(task)"
+                class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing group">
+                <div class="flex items-center gap-2 mb-md">
+                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
+                </div>
+                <h3 class="text-body-md font-semibold text-on-surface mb-md">{{ task.title }}</h3>
+                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate" [class.text-error]="isOverdue(task)">
+                  <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[18px]">check_box</span>
+                  </div>
+                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                    {{ getTaskAssignee(task).substring(0,2) }}
+                  </div>
+                </div>
+              </div>
 
-<!-- SLIDE-OVER DETAIL DRAWER PANEL (JIRA STYLE DETAIL DRAWER) -->
-<app-task-drawer 
-  *ngIf="isEditModalOpen()"
-  [task]="selectedTaskForEdit()" 
-  (onClose)="closeEditModal()" 
-  (onSaved)="loadTasks()"
-></app-task-drawer>
+              <div *ngIf="getTasksByStatus(TaskStatus.Todo).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+                <span class="material-symbols-outlined text-[40px] mb-2">move_to_inbox</span>
+                <p class="text-body-sm">No tasks yet</p>
+              </div>
+            </div>
+
+            <button (click)="addQuickTaskFromCol($event, TaskStatus.Todo)"
+              class="w-full py-2 flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group">
+              <span class="material-symbols-outlined group-hover:text-primary">add</span>
+              <span class="text-body-sm">Create Task</span>
+            </button>
+          </div>
+
+          <!-- IN PROGRESS -->
+          <div class="kanban-column bg-surface-container-low rounded-xl p-md flex flex-col gap-md min-h-[600px]">
+            <div class="flex items-center justify-between px-xs">
+              <div class="flex items-center gap-sm">
+                <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">IN PROGRESS</span>
+                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{ getTasksByStatus(TaskStatus.InProgress).length }}</span>
+              </div>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
+
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.InProgress)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.InProgress)"
+                [draggable]="true"
+                (dragstart)="onDragStart(task, $event)"
+                (click)="openEditModal(task)"
+                class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 hover:border-primary/50 transition-all border-l-4 border-l-primary cursor-grab active:cursor-grabbing group">
+                <div class="flex items-center gap-2 mb-md">
+                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
+                </div>
+                <h3 class="text-body-md font-semibold text-on-surface mb-md">{{ task.title }}</h3>
+                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate" [class.text-error]="isOverdue(task)">
+                  <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-tertiary text-[18px]">bookmark</span>
+                    <span class="text-label-caps text-on-surface-variant">{{ task.priority }}</span>
+                  </div>
+                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                    {{ getTaskAssignee(task).substring(0,2) }}
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="getTasksByStatus(TaskStatus.InProgress).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+                <span class="material-symbols-outlined text-[40px] mb-2">move_to_inbox</span>
+                <p class="text-body-sm">No tasks in progress</p>
+              </div>
+            </div>
+
+            <button (click)="addQuickTaskFromCol($event, TaskStatus.InProgress)"
+              class="w-full py-2 flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+              <span class="material-symbols-outlined">add</span>
+              <span class="text-body-sm">Create Task</span>
+            </button>
+          </div>
+
+          <!-- IN REVIEW -->
+          <div class="kanban-column bg-surface-container-low rounded-xl p-md flex flex-col gap-md min-h-[600px]">
+            <div class="flex items-center justify-between px-xs">
+              <div class="flex items-center gap-sm">
+                <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">IN REVIEW</span>
+                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{ getTasksByStatus(TaskStatus.InReview).length }}</span>
+              </div>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
+
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.InReview)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.InReview)"
+                [draggable]="true"
+                (dragstart)="onDragStart(task, $event)"
+                (click)="openEditModal(task)"
+                class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing group">
+                <div class="flex items-center gap-2 mb-md">
+                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
+                </div>
+                <h3 class="text-body-md font-semibold text-on-surface mb-md">{{ task.title }}</h3>
+                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate" [class.text-error]="isOverdue(task)">
+                  <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[18px]">rate_review</span>
+                  </div>
+                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                    {{ getTaskAssignee(task).substring(0,2) }}
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="getTasksByStatus(TaskStatus.InReview).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+                <span class="material-symbols-outlined text-[40px] mb-2">move_to_inbox</span>
+                <p class="text-body-sm">No tasks in review yet</p>
+              </div>
+            </div>
+
+            <button (click)="addQuickTaskFromCol($event, TaskStatus.InReview)"
+              class="w-full py-2 flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+              <span class="material-symbols-outlined">add</span>
+              <span class="text-body-sm">Create Task</span>
+            </button>
+          </div>
+
+          <!-- DONE -->
+          <div class="kanban-column bg-surface-container-low rounded-xl p-md flex flex-col gap-md min-h-[600px]">
+            <div class="flex items-center justify-between px-xs">
+              <div class="flex items-center gap-sm">
+                <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">DONE</span>
+                <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+              </div>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+            </div>
+
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.Done)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.Done)"
+                [draggable]="true"
+                (dragstart)="onDragStart(task, $event)"
+                (click)="openEditModal(task)"
+                class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 opacity-70 cursor-grab active:cursor-grabbing group">
+                <div class="flex items-center gap-2 mb-md">
+                  <span class="bg-surface-container-highest text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
+                </div>
+                <h3 class="text-body-md font-semibold text-on-surface line-through mb-md">{{ task.title }}</h3>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-outline text-[18px]">check_box</span>
+                  </div>
+                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                    {{ getTaskAssignee(task).substring(0,2) }}
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="getTasksByStatus(TaskStatus.Done).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+                <span class="material-symbols-outlined text-[40px] mb-2">check_circle</span>
+                <p class="text-body-sm">No completed tasks</p>
+              </div>
+            </div>
+
+            <button (click)="addQuickTaskFromCol($event, TaskStatus.Done)"
+              class="w-full py-2 flex items-center justify-center gap-sm text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+              <span class="material-symbols-outlined">add</span>
+              <span class="text-body-sm">Create Task</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TABLE VIEW ==================== -->
+      <div *ngIf="viewMode() === 'table'" class="flex flex-col gap-6">
+        <div class="border-b border-outline-variant pb-4">
+          <nav class="flex gap-1 text-on-surface-variant text-body-sm mb-1">
+            <a class="hover:underline" href="javascript:void(0)">Projects</a>
+            <span>/</span>
+            <a class="hover:underline" href="javascript:void(0)">My Software Team</a>
+          </nav>
+          <h2 class="text-headline-md font-headline-md text-on-surface">Backlog</h2>
+        </div>
+        <app-task-table
+          [tasks]="tasks()"
+          (onEdit)="openEditModal($event)"
+          (onDelete)="deleteTask($event)"
+          (onStatusChange)="onQuickStatusChange($event)"></app-task-table>
+      </div>
+
+      <!-- ==================== REPORT VIEW ==================== -->
+      <div *ngIf="viewMode() === 'report'" class="flex flex-col gap-6">
+        <div class="border-b border-outline-variant pb-4 flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <nav class="flex gap-1 text-on-surface-variant text-body-sm mb-1">
+              <a class="hover:underline" href="javascript:void(0)">Projects</a>
+              <span>/</span>
+              <a class="hover:underline" href="javascript:void(0)">My Software Team</a>
+            </nav>
+            <h2 class="text-headline-md font-headline-md text-on-surface">Reports & Roadmap</h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <label class="text-label-caps font-label-caps text-on-surface-variant uppercase">Sprint:</label>
+            <select [ngModel]="selectedSprintId()" (ngModelChange)="onSprintChange($event)"
+              class="bg-surface-container-lowest border border-outline-variant rounded px-3 py-1.5 text-body-md text-on-surface focus:outline-none focus:border-primary font-semibold cursor-pointer">
+              <option [value]="0">Current Sprint</option>
+              <option [value]="1">Sprint 1</option>
+              <option [value]="2">Sprint 2</option>
+              <option [value]="3">Sprint 3</option>
+            </select>
+          </div>
+        </div>
+        <app-task-dashboard [tasks]="tasks()" [report]="sprintReport()"></app-task-dashboard>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile FAB -->
+  <button (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
+    class="fixed bottom-lg right-lg w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95 md:hidden">
+    <span class="material-symbols-outlined">add</span>
+  </button>
+</ng-container>
+
+<!-- SLIDE-OVER DRAWER -->
+<app-task-drawer *ngIf="isEditModalOpen()" [task]="selectedTaskForEdit()" (onClose)="closeEditModal()" (onSaved)="loadTasks()"></app-task-drawer>
