@@ -3,12 +3,22 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { RegisterDto, LoginDto, AuthResponse } from '../models/auth.model';
 
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5205/api';
+    }
+  }
+  return 'https://api-task.anhnguyen.click/api';
+};
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5205/api/auth';
+  private apiUrl = `${getApiBaseUrl()}/auth`;
 
   // Signals để lưu trạng thái đăng nhập
   readonly currentUser = signal<string | null>(null);

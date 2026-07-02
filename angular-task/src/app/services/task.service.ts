@@ -3,6 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateTaskDto, TaskItem, TaskItemStatus, UpdateStatusDto, UpdateTaskDto } from '../models/task.model';
 
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5205/api';
+    }
+  }
+  return 'https://api-task.anhnguyen.click/api';
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +21,7 @@ export class TaskService {
   private http = inject(HttpClient);
 
   // URL gốc của backend Web API .NET Core (lấy từ launchSettings.json của backend)
-  private apiUrl = 'http://localhost:5205/api/tasks';
+  private apiUrl = `${getApiBaseUrl()}/tasks`;
 
   /**
    * Lấy danh sách toàn bộ công việc.

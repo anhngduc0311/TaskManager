@@ -31,7 +31,9 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": []
+              "allowedHosts": [
+                "task.anhnguyen.click"
+              ]
             },
             "ssr": {
               "entry": "src/server.ts"
@@ -63,6 +65,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": [
+              "task.anhnguyen.click"
+            ]
+          },
           "configurations": {
             "production": {
               "buildTarget": "angular-quickstart:build:production"

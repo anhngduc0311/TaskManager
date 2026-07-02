@@ -52,7 +52,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200") // Địa chỉ của client Angular
+            policy.WithOrigins("http://localhost:4200", "https://task.anhnguyen.click") // Địa chỉ của client Angular
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
