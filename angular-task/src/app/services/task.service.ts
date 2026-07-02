@@ -1,0 +1,59 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { CreateTaskDto, TaskItem, TaskItemStatus, UpdateStatusDto, UpdateTaskDto } from '../models/task.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TaskService {
+  // Tiêm HttpClient sử dụng hàm inject() hiện đại của Angular
+  private http = inject(HttpClient);
+
+  // URL gốc của backend Web API .NET Core (lấy từ launchSettings.json của backend)
+  private apiUrl = 'http://localhost:5205/api/tasks';
+
+  /**
+   * Lấy danh sách toàn bộ công việc.
+   */
+  getTasks(): Observable<TaskItem[]> {
+    return this.http.get<TaskItem[]>(this.apiUrl);
+  }
+
+  /**
+   * Lấy chi tiết một công việc theo Id.
+   */
+  getTask(id: number): Observable<TaskItem> {
+    return this.http.get<TaskItem>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Tạo mới một công việc.
+   */
+  createTask(task: CreateTaskDto): Observable<TaskItem> {
+    return this.http.post<TaskItem>(this.apiUrl, task);
+  }
+
+  /**
+   * Cập nhật thông tin chi tiết một công việc.
+   */
+  updateTask(id: number, task: UpdateTaskDto): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, task);
+  }
+
+  /**
+   * Cập nhật nhanh trạng thái của công việc (Todo, InProgress, Done).
+   * Sử dụng HTTP PATCH khớp với [HttpPatch("{id}/status")] ở backend.
+   */
+  updateStatus(id: number, status: TaskItemStatus): Observable<any> {
+    const statusDto: UpdateStatusDto = { status };
+    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, statusDto);
+  }
+
+  /**
+   * Xóa một công việc.
+   */
+  deleteTask(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+}

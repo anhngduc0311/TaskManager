@@ -1,0 +1,272 @@
+<!-- Màn hình Đăng nhập / Đăng ký nếu chưa đăng nhập -->
+<div *ngIf="!authService.isLoggedIn()" class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>🚀 Kanban Task Manager</h2>
+      <p>{{ isRegisterMode() ? 'Đăng ký tài khoản mới để bắt đầu' : 'Đăng nhập vào hệ thống quản lý' }}</p>
+    </div>
+
+    <!-- Hiển thị lỗi/thành công riêng của Auth -->
+    <div *ngIf="errorMessage() && !authService.isLoggedIn()" class="alert-banner error-banner">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-text">{{ errorMessage() }}</span>
+      <button (click)="errorMessage.set(null)" class="alert-close">×</button>
+    </div>
+    
+    <div *ngIf="successMessage() && !authService.isLoggedIn()" class="alert-banner success-banner">
+      <span class="alert-icon">✓</span>
+      <span class="alert-text">{{ successMessage() }}</span>
+      <button (click)="successMessage.set(null)" class="alert-close">×</button>
+    </div>
+
+    <form (ngSubmit)="handleAuthSubmit()" #authForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="authUsername">Tên tài khoản <span class="required">*</span></label>
+        <input
+          type="text"
+          id="authUsername"
+          name="authUsername"
+          [ngModel]="authUsername()"
+          (ngModelChange)="authUsername.set($event)"
+          placeholder="Nhập tên tài khoản..."
+          required
+          class="form-control"
+        />
+      </div>
+
+      <div *ngIf="isRegisterMode()" class="form-group">
+        <label for="authEmail">Địa chỉ Email <span class="required">*</span></label>
+        <input
+          type="email"
+          id="authEmail"
+          name="authEmail"
+          [ngModel]="authEmail()"
+          (ngModelChange)="authEmail.set($event)"
+          placeholder="example@domain.com"
+          required
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="authPassword">Mật khẩu <span class="required">*</span></label>
+        <input
+          type="password"
+          id="authPassword"
+          name="authPassword"
+          [ngModel]="authPassword()"
+          (ngModelChange)="authPassword.set($event)"
+          placeholder="Nhập mật khẩu..."
+          required
+          class="form-control"
+        />
+      </div>
+
+      <button type="submit" [disabled]="!authForm.valid" class="btn btn-primary btn-auth-submit">
+        {{ isRegisterMode() ? 'Đăng ký tài khoản' : 'Đăng nhập' }}
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>
+        {{ isRegisterMode() ? 'Đã có tài khoản?' : 'Chưa có tài khoản?' }}
+        <button (click)="isRegisterMode.set(!isRegisterMode()); errorMessage.set(null); successMessage.set(null);" class="btn-link">
+          {{ isRegisterMode() ? 'Đăng nhập ngay' : 'Đăng ký ngay' }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Nội dung Kanban Workspace hiển thị sau khi đã đăng nhập -->
+<div *ngIf="authService.isLoggedIn()" class="kanban-container">
+  <!-- Thanh thông tin User đăng nhập -->
+  <div class="user-session-bar">
+    <div class="user-info">
+      <span class="user-avatar">👤</span>
+      <span class="username-display">Xin chào, <strong>{{ authService.currentUser() }}</strong></span>
+      <span class="role-badge" [class.admin]="authService.userRole() === 'Admin'">{{ authService.userRole() }}</span>
+    </div>
+    <button (click)="logout()" class="btn btn-logout">
+      🚪 Đăng xuất
+    </button>
+  </div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <h1>🚀 Kanban Task Manager</h1>
+    <p>Hệ thống quản lý công việc tinh gọn kết nối .NET Core Web API</p>
+  </header>
+
+  <!-- Hiển thị lỗi nếu có -->
+  <div *ngIf="errorMessage()" class="alert-banner">
+    <span class="alert-icon">⚠️</span>
+    <span class="alert-text">{{ errorMessage() }}</span>
+    <button (click)="errorMessage.set(null)" class="alert-close">×</button>
+  </div>
+
+  <!-- Form thêm mới Task -->
+  <section class="task-form-section">
+    <div class="form-card">
+      <h3>➕ Thêm công việc mới</h3>
+      <form (ngSubmit)="addNewTask()" #taskForm="ngForm" class="task-form">
+        <div class="form-group">
+          <label for="title">Tiêu đề công việc <span class="required">*</span></label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            [ngModel]="newTitle()"
+            (ngModelChange)="newTitle.set($event)"
+            placeholder="Ví dụ: Thiết kế cơ sở dữ liệu..."
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Mô tả chi tiết</label>
+          <textarea
+            id="description"
+            name="description"
+            [ngModel]="newDescription()"
+            (ngModelChange)="newDescription.set($event)"
+            placeholder="Nhập mô tả ngắn gọn..."
+            rows="2"
+            class="form-control"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="dueDate">Hạn chót (Due Date)</label>
+          <input
+            type="datetime-local"
+            id="dueDate"
+            name="dueDate"
+            [ngModel]="newDueDate()"
+            (ngModelChange)="newDueDate.set($event)"
+            class="form-control"
+          />
+        </div>
+
+        <button type="submit" [disabled]="!taskForm.valid" class="btn btn-primary">
+          Tạo công việc
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Kanban Board -->
+  <main class="kanban-board">
+    <!-- Cột TODO -->
+    <div class="kanban-column todo-col">
+      <div class="column-header">
+        <span class="badge"></span>
+        <h2>📋 Cần làm (Todo)</h2>
+        <span class="count">{{ todoTasks().length }}</span>
+      </div>
+      <div class="task-list">
+        <div *ngIf="todoTasks().length === 0" class="empty-state">
+          Chưa có công việc nào cần làm.
+        </div>
+        <div *ngFor="let task of todoTasks()" class="task-card" [class.overdue]="isOverdue(task)">
+          <div class="task-body">
+            <h4>{{ task.title }}</h4>
+            <p *ngIf="task.description" class="desc">{{ task.description }}</p>
+            <div class="task-meta">
+              <span *ngIf="task.dueDate" class="due-date" [class.danger]="isOverdue(task)">
+                📅 {{ isOverdue(task) ? '⚠️ Quá hạn: ' : 'Hạn: ' }}{{ task.dueDate | date: 'dd/MM/yyyy HH:mm' }}
+              </span>
+              <span class="created-date">
+                ✍️ Tạo: {{ task.createdDate | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button (click)="moveTask(task.id, TaskStatus.InProgress)" class="btn-action btn-move" title="Bắt đầu thực hiện">
+              Bắt đầu ➔
+            </button>
+            <button (click)="deleteTask(task.id)" class="btn-action btn-delete" title="Xóa công việc">
+              🗑️ Xóa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cột IN PROGRESS -->
+    <div class="kanban-column progress-col">
+      <div class="column-header">
+        <span class="badge"></span>
+        <h2>⚡ Đang làm (In Progress)</h2>
+        <span class="count">{{ inProgressTasks().length }}</span>
+      </div>
+      <div class="task-list">
+        <div *ngIf="inProgressTasks().length === 0" class="empty-state">
+          Không có công việc nào đang chạy.
+        </div>
+        <div *ngFor="let task of inProgressTasks()" class="task-card" [class.overdue]="isOverdue(task)">
+          <div class="task-body">
+            <h4>{{ task.title }}</h4>
+            <p *ngIf="task.description" class="desc">{{ task.description }}</p>
+            <div class="task-meta">
+              <span *ngIf="task.dueDate" class="due-date warning" [class.danger]="isOverdue(task)">
+                📅 {{ isOverdue(task) ? '⚠️ Quá hạn: ' : 'Hạn: ' }}{{ task.dueDate | date: 'dd/MM/yyyy HH:mm' }}
+              </span>
+              <span class="created-date">
+                ✍️ Tạo: {{ task.createdDate | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+          </div>
+          <div class="task-actions dual-actions">
+            <button (click)="moveTask(task.id, TaskStatus.Todo)" class="btn-action btn-back" title="Quay lại Cần làm">
+              ➔ Trả lại
+            </button>
+            <button (click)="moveTask(task.id, TaskStatus.Done)" class="btn-action btn-done" title="Hoàn thành công việc">
+              Hoàn thành ✓
+            </button>
+            <button (click)="deleteTask(task.id)" class="btn-action btn-delete" title="Xóa công việc">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cột DONE -->
+    <div class="kanban-column done-col">
+      <div class="column-header">
+        <span class="badge"></span>
+        <h2>✅ Đã xong (Done)</h2>
+        <span class="count">{{ doneTasks().length }}</span>
+      </div>
+      <div class="task-list">
+        <div *ngIf="doneTasks().length === 0" class="empty-state">
+          Chưa có công việc nào hoàn thành.
+        </div>
+        <div *ngFor="let task of doneTasks()" class="task-card completed">
+          <div class="task-body">
+            <h4>{{ task.title }}</h4>
+            <p *ngIf="task.description" class="desc">{{ task.description }}</p>
+            <div class="task-meta">
+              <span *ngIf="task.dueDate" class="due-date completed">
+                📅 Hạn: {{ task.dueDate | date: 'dd/MM/yyyy' }}
+              </span>
+              <span class="created-date">
+                ✍️ Tạo: {{ task.createdDate | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button (click)="moveTask(task.id, TaskStatus.InProgress)" class="btn-action btn-reopen" title="Làm lại công việc">
+              ➔ Làm lại
+            </button>
+            <button (click)="deleteTask(task.id)" class="btn-action btn-delete" title="Xóa công việc">
+              🗑️ Xóa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

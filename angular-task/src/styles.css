@@ -1,0 +1,31 @@
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --bg-gradient: linear-gradient(135deg, #eef2f6 0%, #dbeafe 100%);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(226, 232, 240, 0.8);
+  
+  --todo-color: #6366f1;
+  --todo-bg: #e0e7ff;
+  --progress-color: #f59e0b;
+  --progress-bg: #fef3c7;
+  --done-color: #10b981;
+  --done-bg: #d1fae5;
+  
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 40px rgba(79, 70, 229, 0.08);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 20px;
+}
