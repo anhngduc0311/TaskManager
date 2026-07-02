@@ -276,7 +276,6 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       animation: fadeIn 0.4s ease-out;
     }
 
-    /* 1. Metrics cards grid */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -296,27 +295,27 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     }
 
     .metric-card {
-      background: #1b2027;
-      border: 1px solid #30353d;
+      background: #ffffff;
+      border: 1px solid #c3c6d6;
       border-radius: 16px;
       padding: 20px;
       display: flex;
       align-items: center;
       gap: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      box-shadow: 0 1px 3px rgba(9, 30, 66, 0.13);
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .metric-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(168, 200, 255, 0.08);
+      box-shadow: 0 4px 12px rgba(9, 30, 66, 0.15);
     }
 
     .metric-icon-box {
       width: 50px;
       height: 50px;
       border-radius: 12px;
-      background: #252a32;
+      background: #f0f3ff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -326,18 +325,17 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .metric-svg-icon {
       width: 26px;
       height: 26px;
-      color: #8b919e;
+      color: #737685;
     }
 
-    /* Theme colors */
-    .bug-card .metric-icon-box { background: rgba(239, 68, 68, 0.15); }
-    .bug-card .metric-svg-icon { color: #f87171; }
-    .sp-card .metric-icon-box { background: rgba(2, 132, 199, 0.15); }
-    .sp-card .metric-svg-icon { color: #38bdf8; }
-    .velocity-card .metric-icon-box { background: rgba(79, 70, 229, 0.15); }
-    .velocity-card .metric-svg-icon { color: #9945ff; }
-    .overdue-card .metric-icon-box { background: rgba(249, 115, 22, 0.15); }
-    .overdue-card .metric-svg-icon { color: #fb923c; }
+    .bug-card .metric-icon-box { background: rgba(239, 68, 68, 0.1); }
+    .bug-card .metric-svg-icon { color: #dc2626; }
+    .sp-card .metric-icon-box { background: rgba(2, 132, 199, 0.1); }
+    .sp-card .metric-svg-icon { color: #0284c7; }
+    .velocity-card .metric-icon-box { background: rgba(79, 70, 229, 0.1); }
+    .velocity-card .metric-svg-icon { color: #6d28d9; }
+    .overdue-card .metric-icon-box { background: rgba(249, 115, 22, 0.1); }
+    .overdue-card .metric-svg-icon { color: #ea580c; }
 
     .metric-details {
       display: flex;
@@ -349,7 +347,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .metric-label {
       font-size: 0.78rem;
       font-weight: 700;
-      color: #8b919e;
+      color: #737685;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -357,19 +355,19 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .metric-value {
       font-size: 1.4rem;
       font-weight: 800;
-      color: #dee2ec;
+      color: #091c35;
       margin: 0;
     }
 
     .metric-hint {
       font-size: 0.72rem;
-      color: #8b919e;
+      color: #737685;
     }
 
     .metric-progress-track {
       width: 100%;
       height: 5px;
-      background: #252a32;
+      background: #dfe8ff;
       border-radius: 99px;
       margin-top: 4px;
       overflow: hidden;
@@ -377,12 +375,11 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
 
     .metric-progress-fill {
       height: 100%;
-      background: #0284c7;
+      background: #003d9b;
       border-radius: 99px;
       transition: width 0.4s ease;
     }
 
-    /* 2. Charts grid */
     .charts-row {
       display: grid;
       grid-template-columns: 7fr 5fr;
@@ -396,12 +393,12 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     }
 
     .dashboard-chart-card {
-      background: #1b2027;
-      border: 1px solid #30353d;
+      background: #ffffff;
+      border: 1px solid #c3c6d6;
       border-radius: 20px;
       padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      color: #dee2ec;
+      box-shadow: 0 1px 3px rgba(9, 30, 66, 0.13);
+      color: #091c35;
     }
 
     .chart-header {
@@ -414,29 +411,29 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .chart-header h4 {
       font-size: 1.1rem;
       font-weight: 800;
-      color: #dee2ec;
+      color: #091c35;
       margin: 0;
     }
 
     .chart-desc {
       font-size: 0.82rem;
-      color: #8b919e;
+      color: #737685;
       margin: 2px 0 0 0;
     }
 
     .chart-badge {
       font-size: 0.68rem;
-      background: #252a32;
-      color: #c1c6d4;
+      background: #e7eeff;
+      color: #434654;
       padding: 2px 8px;
       border-radius: 99px;
       font-weight: 700;
-      border: 1px solid #30353d;
+      border: 1px solid #c3c6d6;
     }
 
     .chart-svg-wrapper {
-      background: #171c23;
-      border: 1px dashed #30353d;
+      background: #f9f9ff;
+      border: 1px dashed #c3c6d6;
       border-radius: 12px;
       padding: 12px;
     }
@@ -449,7 +446,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
 
     .chart-axis-text {
       font-size: 9px;
-      fill: #8b919e;
+      fill: #737685;
       font-weight: 500;
     }
 
@@ -462,13 +459,13 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       display: none;
       font-size: 9px;
       font-weight: 800;
-      fill: #dee2ec;
+      fill: #091c35;
       pointer-events: none;
     }
 
     .svg-point-group:hover circle {
       r: 8.5;
-      fill: #f87171;
+      fill: #dc2626;
     }
 
     .svg-point-group:hover text {
@@ -481,7 +478,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       gap: 20px;
       margin-top: 16px;
       font-size: 0.8rem;
-      color: #8b919e;
+      color: #737685;
       font-weight: 600;
     }
 
@@ -498,14 +495,13 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     }
 
     .legend-color.ideal-dot {
-      border-top: 2px dashed #8b919e;
+      border-top: 2px dashed #737685;
     }
 
     .legend-color.actual-solid {
-      background: #579dff;
+      background: #003d9b;
     }
 
-    /* Distribution listing */
     .distribution-list {
       display: flex;
       flex-direction: column;
@@ -535,19 +531,19 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       text-transform: capitalize;
     }
 
-    .type-tag[data-type="Bug"] { background: rgba(220, 38, 38, 0.15); color: #f87171; }
-    .type-tag[data-type="Epic"] { background: rgba(192, 132, 252, 0.15); color: #d8b4fe; border: 1px solid rgba(192, 132, 252, 0.3); }
-    .type-tag[data-type="Story"] { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
-    .type-tag[data-type="Task"] { background: #30353d; color: #dee2ec; }
+    .type-tag[data-type="Bug"] { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+    .type-tag[data-type="Epic"] { background: rgba(192, 132, 252, 0.12); color: #9333ea; border: 1px solid rgba(192, 132, 252, 0.3); }
+    .type-tag[data-type="Story"] { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+    .type-tag[data-type="Task"] { background: #dfe8ff; color: #434654; }
 
     .dist-text {
-      color: #c1c6d4;
+      color: #434654;
     }
 
     .dist-track {
       width: 100%;
       height: 8px;
-      background: #252a32;
+      background: #dfe8ff;
       border-radius: 99px;
       overflow: hidden;
     }
@@ -558,19 +554,18 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       transition: width 0.4s ease;
     }
 
-    .dist-fill[data-type="Bug"] { background: #f87171; }
+    .dist-fill[data-type="Bug"] { background: #dc2626; }
     .dist-fill[data-type="Epic"] { background: #c084fc; }
-    .dist-fill[data-type="Story"] { background: #3b82f6; }
-    .dist-fill[data-type="Task"] { background: #8b919e; }
+    .dist-fill[data-type="Story"] { background: #2563eb; }
+    .dist-fill[data-type="Task"] { background: #737685; }
 
-    /* 3. Gantt section styling */
     .gantt-section {
-      background: #1b2027;
-      border: 1px solid #30353d;
+      background: #ffffff;
+      border: 1px solid #c3c6d6;
       border-radius: 20px;
       padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      color: #dee2ec;
+      box-shadow: 0 1px 3px rgba(9, 30, 66, 0.13);
+      color: #091c35;
     }
 
     .gantt-title-header {
@@ -580,27 +575,27 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .gantt-title-header h4 {
       font-size: 1.15rem;
       font-weight: 800;
-      color: #dee2ec;
+      color: #091c35;
       margin: 0;
     }
 
     .gantt-title-header p {
       font-size: 0.82rem;
-      color: #8b919e;
+      color: #737685;
       margin: 2px 0 0 0;
     }
 
     .gantt-grid-wrapper {
-      border: 1px solid #30353d;
+      border: 1px solid #c3c6d6;
       border-radius: 12px;
       overflow: hidden;
-      background: #171c23;
+      background: #f9f9ff;
     }
 
     .gantt-header-row {
       display: flex;
-      background: #252a32;
-      border-bottom: 2px solid #30353d;
+      background: #e7eeff;
+      border-bottom: 2px solid #c3c6d6;
     }
 
     .gantt-title-col-header {
@@ -608,10 +603,10 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       min-width: 250px;
       padding: 12px 16px;
       font-weight: 700;
-      color: #c1c6d4;
+      color: #434654;
       font-size: 0.78rem;
       text-transform: uppercase;
-      border-right: 1px solid #30353d;
+      border-right: 1px solid #c3c6d6;
       display: flex;
       align-items: center;
     }
@@ -626,16 +621,15 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       text-align: center;
       padding: 12px 4px;
       font-weight: 700;
-      color: #8b919e;
+      color: #737685;
       font-size: 0.75rem;
-      border-right: 1px dashed #30353d;
+      border-right: 1px dashed #c3c6d6;
     }
 
     .gantt-day-header-col:last-child {
       border-right: none;
     }
 
-    /* Gantt rows */
     .gantt-rows-container {
       display: flex;
       flex-direction: column;
@@ -643,19 +637,19 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
 
     .gantt-data-row {
       display: flex;
-      border-bottom: 1px solid #30353d;
+      border-bottom: 1px solid #c3c6d6;
       height: 48px;
     }
 
     .gantt-data-row:hover {
-      background: rgba(48, 53, 61, 0.4);
+      background: rgba(223, 232, 255, 0.5);
     }
 
     .gantt-title-cell {
       width: 250px;
       min-width: 250px;
       padding: 8px 16px;
-      border-right: 1px solid #30353d;
+      border-right: 1px solid #c3c6d6;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -664,18 +658,18 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
 
     .cell-indented {
       padding-left: 28px;
-      background: rgba(23, 28, 35, 0.4);
+      background: rgba(240, 243, 255, 0.6);
     }
 
     .indent-connector {
-      color: #a8c8ff;
+      color: #003d9b;
       font-weight: 700;
     }
 
     .gantt-title-text {
       font-size: 0.85rem;
       font-weight: 600;
-      color: #dee2ec;
+      color: #091c35;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -683,7 +677,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
 
     .gantt-title-text.text-muted {
       font-weight: 500;
-      color: #8b919e;
+      color: #737685;
     }
 
     .gantt-bar-cell {
@@ -697,7 +691,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .gantt-bg-line {
       flex: 1;
       height: 100%;
-      border-right: 1px dashed rgba(48, 53, 61, 0.5);
+      border-right: 1px dashed rgba(195, 198, 214, 0.5);
       pointer-events: none;
     }
 
@@ -705,7 +699,6 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       border-right: none;
     }
 
-    /* Progress bar horizontal */
     .gantt-progress-bar {
       position: absolute;
       height: 24px;
@@ -724,7 +717,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
 
     .gantt-progress-bar:hover {
       transform: scaleY(1.08);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 10px rgba(9, 30, 66, 0.2);
       z-index: 100;
     }
 
@@ -740,21 +733,18 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       white-space: nowrap;
     }
 
-    /* Colors */
-    .gantt-progress-bar[data-status="Todo"] { background: #454f59; color: #dee2ec; }
+    .gantt-progress-bar[data-status="Todo"] { background: #c3c6d6; color: #434654; }
     .gantt-progress-bar[data-status="InProgress"] { background: #f59e0b; color: #fff; }
     .gantt-progress-bar[data-status="Done"] { background: #10b981; color: #fff; }
 
-    /* Red outline for Critical */
     .gantt-progress-bar[data-priority="Critical"] {
-      border: 2px solid #f87171;
+      border: 2px solid #dc2626;
     }
 
-    /* Gantt Tooltip */
     .gantt-bar-tooltip {
       visibility: hidden;
-      background: #252a32;
-      color: #dee2ec;
+      background: #ffffff;
+      color: #091c35;
       text-align: left;
       border-radius: 8px;
       padding: 10px 14px;
@@ -764,8 +754,8 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       transform: translateX(-50%);
       z-index: 1000;
       width: 240px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      border: 1px solid #30353d;
+      box-shadow: 0 10px 25px rgba(9, 30, 66, 0.15);
+      border: 1px solid #c3c6d6;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -783,7 +773,7 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
       margin-left: -5px;
       border-width: 5px;
       border-style: solid;
-      border-color: #252a32 transparent transparent transparent;
+      border-color: #ffffff transparent transparent transparent;
     }
 
     .gantt-progress-bar:hover .gantt-bar-tooltip {
@@ -794,32 +784,32 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, SprintReportDto } fro
     .tooltip-title {
       font-weight: 800;
       font-size: 0.85rem;
-      border-bottom: 1px solid #30353d;
+      border-bottom: 1px solid #c3c6d6;
       padding-bottom: 4px;
       margin-bottom: 4px;
-      color: #dee2ec;
+      color: #091c35;
     }
 
     .tooltip-info-row {
       display: flex;
       justify-content: space-between;
       font-size: 0.72rem;
-      color: #94a3b8;
+      color: #737685;
     }
 
     .tooltip-info-row strong {
-      color: #f8fafc;
+      color: #091c35;
     }
 
     .tooltip-info-row strong[data-priority="Critical"] {
-      color: #ef4444;
+      color: #dc2626;
     }
 
     .gantt-empty-state {
       padding: 32px;
       text-align: center;
       font-style: italic;
-      color: #64748b;
+      color: #737685;
     }
 
     @keyframes fadeIn {

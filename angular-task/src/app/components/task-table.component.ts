@@ -216,23 +216,22 @@ interface TaskGroup {
     </ng-template>
   `,
   styles: [`
-    /* SaaS Table Card Container */
     .saas-table-card {
-      background: #1b2027;
-      border: 1px solid #30353d;
+      background: #ffffff;
+      border: 1px solid #c3c6d6;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 1px 3px rgba(9, 30, 66, 0.13);
       padding: 20px;
       margin-bottom: 30px;
       transition: box-shadow 0.3s ease;
-      color: #dee2ec;
+      color: #091c35;
     }
 
     .saas-table-card:hover {
-      box-shadow: 0 10px 30px rgba(168, 200, 255, 0.08);
+      box-shadow: 0 4px 12px rgba(9, 30, 66, 0.15);
     }
 
-    /* 1. Smart Filter Bar styling */
+    /* 1. Filter Bar */
     .saas-filter-bar {
       display: flex;
       justify-content: space-between;
@@ -254,26 +253,26 @@ interface TaskGroup {
     .search-icon {
       position: absolute;
       left: 14px;
-      color: #8b919e;
+      color: #737685;
       font-size: 0.95rem;
       pointer-events: none;
     }
 
     .filter-control {
       padding: 10px 14px;
-      border: 1px solid #30353d;
+      border: 1px solid #c3c6d6;
       border-radius: 10px;
       font-family: inherit;
       font-size: 0.9rem;
-      background: #171c23;
-      color: #dee2ec;
+      background: #f0f3ff;
+      color: #091c35;
       outline: none;
       transition: all 0.2s ease;
     }
 
     .filter-control:focus {
-      border-color: #a8c8ff;
-      box-shadow: 0 0 0 3px rgba(168, 200, 255, 0.15);
+      border-color: #003d9b;
+      box-shadow: 0 0 0 3px rgba(0, 61, 155, 0.1);
     }
 
     .search-input {
@@ -287,7 +286,7 @@ interface TaskGroup {
       right: 12px;
       background: none;
       border: none;
-      color: #8b919e;
+      color: #737685;
       cursor: pointer;
       font-size: 0.85rem;
       padding: 4px;
@@ -295,8 +294,8 @@ interface TaskGroup {
     }
 
     .clear-search-btn:hover {
-      background: #30353d;
-      color: #dee2ec;
+      background: #dfe8ff;
+      color: #091c35;
     }
 
     .filters-dropdowns {
@@ -315,7 +314,7 @@ interface TaskGroup {
     .dropdown-label {
       font-size: 0.82rem;
       font-weight: 600;
-      color: #c1c6d4;
+      color: #434654;
     }
 
     .select-dropdown {
@@ -326,13 +325,13 @@ interface TaskGroup {
 
     .group-by-select {
       min-width: 180px;
-      background: #252a32;
-      border-color: #30353d;
+      background: #e7eeff;
+      border-color: #c3c6d6;
       font-weight: 600;
-      color: #dee2ec;
+      color: #091c35;
     }
 
-    /* 2. Main Tree Table Styles */
+    /* 2. Table Styles */
     .saas-table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -345,51 +344,49 @@ interface TaskGroup {
     }
 
     .saas-data-table th {
-      background: #252a32;
-      color: #c1c6d4;
+      background: #e7eeff;
+      color: #434654;
       font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       padding: 12px 16px;
-      border-bottom: 2px solid #30353d;
+      border-bottom: 2px solid #c3c6d6;
       user-select: none;
     }
 
     .saas-data-table td {
       padding: 12px 16px;
-      border-bottom: 1px solid #30353d;
+      border-bottom: 1px solid #c3c6d6;
       font-size: 0.9rem;
       vertical-align: middle;
-      color: #dee2ec;
+      color: #091c35;
     }
 
-    /* Row Hover Interaction and Effects */
     .saas-task-row {
       transition: background-color 0.15s ease;
       height: 48px;
     }
 
     .saas-task-row:hover {
-      background-color: rgba(48, 53, 61, 0.5);
+      background-color: rgba(223, 232, 255, 0.5);
     }
 
     .saas-task-row.overdue-row {
-      background-color: rgba(248, 113, 113, 0.15);
+      background-color: rgba(186, 26, 26, 0.08);
     }
 
     .saas-task-row.overdue-row:hover {
-      background-color: rgba(248, 113, 113, 0.25);
+      background-color: rgba(186, 26, 26, 0.15);
     }
 
     .saas-task-row.row-completed .task-title-text {
-      color: #8b919e;
+      color: #737685;
       text-decoration: line-through;
     }
 
-    /* Tree indentation for subtasks */
     .subtask-row-indent {
-      background-color: rgba(23, 28, 35, 0.4);
+      background-color: rgba(240, 243, 255, 0.6);
     }
 
     .subtask-row-indent td:nth-child(4) {
@@ -399,7 +396,7 @@ interface TaskGroup {
     .expand-toggle-btn {
       background: none;
       border: none;
-      color: #8b919e;
+      color: #737685;
       cursor: pointer;
       font-size: 0.72rem;
       padding: 4px 8px;
@@ -408,17 +405,16 @@ interface TaskGroup {
     }
 
     .expand-toggle-btn:hover {
-      color: #a8c8ff;
-      background: #30353d;
+      color: #003d9b;
+      background: #dfe8ff;
     }
 
     .subtask-arrow-indicator {
-      color: #a8c8ff;
+      color: #003d9b;
       font-weight: 700;
       font-size: 1rem;
     }
 
-    /* Badges Pastel Premium styling */
     .saas-badge {
       font-size: 0.75rem;
       font-weight: 700;
@@ -430,27 +426,24 @@ interface TaskGroup {
       text-transform: capitalize;
     }
 
-    /* Status Badges */
-    .status-badge[data-status="Todo"] { background: #30353d; color: #dee2ec; }
-    .status-badge[data-status="InProgress"] { background: rgba(87, 157, 255, 0.15); color: #a8c8ff; border: 1px solid rgba(87, 157, 255, 0.3); }
-    .status-badge[data-status="Done"] { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-badge[data-status="Todo"] { background: #dfe8ff; color: #003d9b; }
+    .status-badge[data-status="InProgress"] { background: rgba(0, 61, 155, 0.1); color: #003d9b; border: 1px solid rgba(0, 61, 155, 0.3); }
+    .status-badge[data-status="Done"] { background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
 
-    /* Priority Badges */
-    .priority-badge[data-priority="Critical"] { background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); }
-    .priority-badge[data-priority="High"] { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-    .priority-badge[data-priority="Medium"] { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
-    .priority-badge[data-priority="Low"] { background: #30353d; color: #dee2ec; }
+    .priority-badge[data-priority="Critical"] { background: rgba(248, 113, 113, 0.15); color: #dc2626; border: 1px solid rgba(248, 113, 113, 0.4); }
+    .priority-badge[data-priority="High"] { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+    .priority-badge[data-priority="Medium"] { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+    .priority-badge[data-priority="Low"] { background: #dfe8ff; color: #434654; }
 
-    /* Task Type Badges */
-    .type-badge[data-type="Bug"] { background: rgba(220, 38, 38, 0.15); color: #f87171; }
-    .type-badge[data-type="Epic"] { background: rgba(192, 132, 252, 0.15); color: #d8b4fe; border: 1px solid rgba(192, 132, 252, 0.3); }
-    .type-badge[data-type="Story"] { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
-    .type-badge[data-type="Task"] { background: #30353d; color: #dee2ec; border: 1px solid #414752; }
+    .type-badge[data-type="Bug"] { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+    .type-badge[data-type="Epic"] { background: rgba(192, 132, 252, 0.12); color: #9333ea; border: 1px solid rgba(192, 132, 252, 0.3); }
+    .type-badge[data-type="Story"] { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+    .type-badge[data-type="Task"] { background: #dfe8ff; color: #434654; }
 
     .subtasks-count-pill {
       font-size: 0.72rem;
-      background: #30353d;
-      color: #c1c6d4;
+      background: #dfe8ff;
+      color: #434654;
       font-weight: 600;
       padding: 1px 6px;
       border-radius: 99px;
@@ -463,23 +456,23 @@ interface TaskGroup {
 
     .task-title-text {
       font-weight: 600;
-      color: #dee2ec;
+      color: #091c35;
       cursor: pointer;
       transition: color 0.15s ease;
     }
 
     .task-title-text:hover {
-      color: #a8c8ff;
+      color: #003d9b;
       text-decoration: underline;
     }
 
     .task-id-cell {
-      color: #8b919e;
+      color: #737685;
       font-weight: 600;
     }
 
     .date-time-cell {
-      color: #8b919e;
+      color: #737685;
       font-weight: 500;
     }
 
@@ -497,9 +490,9 @@ interface TaskGroup {
       width: 28px;
       height: 28px;
       border-radius: 6px;
-      border: 1px solid #30353d;
-      background: #252a32;
-      color: #dee2ec;
+      border: 1px solid #c3c6d6;
+      background: #f0f3ff;
+      color: #434654;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -509,31 +502,30 @@ interface TaskGroup {
     }
 
     .btn-quick-done:hover {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.15);
       border-color: rgba(16, 185, 129, 0.4);
-      color: #34d399;
+      color: #059669;
     }
 
     .btn-quick-edit:hover {
-      background: #30353d;
-      border-color: #454f59;
-      color: #dee2ec;
+      background: #dfe8ff;
+      border-color: #c3c6d6;
+      color: #003d9b;
     }
 
     .btn-quick-delete:hover {
-      background: rgba(220, 38, 38, 0.2);
+      background: rgba(220, 38, 38, 0.1);
       border-color: rgba(220, 38, 38, 0.4);
-      color: #f87171;
+      color: #dc2626;
     }
 
-    /* Group Header Rows Styling */
     .table-group-header-row {
-      background: #171c23;
+      background: #f0f3ff;
     }
 
     .table-group-header-row td {
       padding: 10px 16px !important;
-      border-bottom: 2px solid #30353d !important;
+      border-bottom: 2px solid #c3c6d6 !important;
     }
 
     .group-header-content {
@@ -546,27 +538,26 @@ interface TaskGroup {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #cbd5e1;
     }
 
-    .group-dot[data-status="Todo"], .group-dot.Todo { background: #579dff; }
-    .group-dot[data-status="InProgress"], .group-dot.InProgress { background: #f59e0b; }
-    .group-dot[data-status="Done"], .group-dot.Done { background: #10b981; }
-    .group-dot.Epic { background: #d8b4fe; }
-    .group-dot.NoEpic { background: #8b919e; }
+    .group-dot.Todo { background: #003d9b; }
+    .group-dot.InProgress { background: #f59e0b; }
+    .group-dot.Done { background: #10b981; }
+    .group-dot.Epic { background: #c084fc; }
+    .group-dot.NoEpic { background: #737685; }
 
     .group-name {
       font-size: 0.85rem;
-      color: #dee2ec;
+      color: #091c35;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .group-count-badge {
       font-size: 0.72rem;
-      background: #252a32;
-      color: #8b919e;
-      border: 1px solid #30353d;
+      background: #e7eeff;
+      color: #434654;
+      border: 1px solid #c3c6d6;
       padding: 2px 8px;
       border-radius: 99px;
       font-weight: 600;
@@ -575,7 +566,7 @@ interface TaskGroup {
     .table-empty-message {
       text-align: center;
       padding: 30px !important;
-      color: #8b919e;
+      color: #737685;
       font-style: italic;
     }
 

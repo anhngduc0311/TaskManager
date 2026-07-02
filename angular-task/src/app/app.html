@@ -3,17 +3,20 @@
   <div class="w-full max-w-[420px] bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-lg">
     <div class="flex flex-col items-center mb-8">
       <div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-white mb-3">
-        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+        <span class="material-symbols-outlined text-[22px]"
+          style="font-variation-settings: 'FILL' 1;">view_kanban</span>
       </div>
-      <span class="text-display-lg font-display-lg text-primary">Jira</span>
+      <span class="text-display-lg font-display-lg text-primary">Task Management</span>
       <p class="text-body-sm text-on-surface-variant font-semibold tracking-wide uppercase mt-1">Software Project</p>
     </div>
 
-    <div *ngIf="errorMessage()" class="bg-error-container border border-error/30 text-on-error-container px-4 py-3 rounded-lg text-body-sm mb-5 font-medium flex items-start gap-2">
+    <div *ngIf="errorMessage()"
+      class="bg-error-container border border-error/30 text-on-error-container px-4 py-3 rounded-lg text-body-sm mb-5 font-medium flex items-start gap-2">
       <span class="material-symbols-outlined text-md mt-0.5">error</span>
       <span>{{ errorMessage() }}</span>
     </div>
-    <div *ngIf="successMessage()" class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg text-body-sm mb-5 font-medium flex items-start gap-2">
+    <div *ngIf="successMessage()"
+      class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg text-body-sm mb-5 font-medium flex items-start gap-2">
       <span class="material-symbols-outlined text-md mt-0.5">check_circle</span>
       <span>{{ successMessage() }}</span>
     </div>
@@ -42,7 +45,8 @@
       <div class="flex flex-col gap-1.5">
         <div class="flex justify-between items-center">
           <label class="text-label-caps font-label-caps text-on-surface-variant">Password</label>
-          <a href="javascript:void(0)" class="text-primary hover:underline text-body-sm font-semibold" *ngIf="!isRegisterMode()">Forgot password?</a>
+          <a href="javascript:void(0)" class="text-primary hover:underline text-body-sm font-semibold"
+            *ngIf="!isRegisterMode()">Forgot password?</a>
         </div>
         <div class="relative">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
@@ -54,7 +58,7 @@
 
       <button type="submit"
         class="w-full bg-primary-container text-white font-bold py-3 rounded-lg hover:opacity-90 active:scale-[0.98] transition-all text-body-md mt-3">
-        {{ isRegisterMode() ? 'Create Account' : 'Log in to Jira' }}
+        {{ isRegisterMode() ? 'Create Account' : 'Log in to Task Management' }}
       </button>
     </form>
 
@@ -74,13 +78,15 @@
 <ng-container *ngIf="authService.isAuthenticated()">
 
   <!-- TOP NAVBAR -->
-  <header class="bg-surface-container-lowest border-b border-outline-variant fixed top-0 w-full z-50 h-16 flex justify-between items-center px-md">
+  <header
+    class="bg-surface-container-lowest border-b border-outline-variant fixed top-0 w-full z-50 h-16 flex justify-between items-center px-md">
     <div class="flex items-center gap-lg">
       <div class="flex items-center gap-sm">
         <div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
-          <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+          <span class="material-symbols-outlined text-[18px]"
+            style="font-variation-settings: 'FILL' 1;">view_kanban</span>
         </div>
-        <span class="text-title-sm font-title-sm font-black text-primary">Jira</span>
+        <span class="text-title-sm font-title-sm font-black text-primary">Task Management</span>
       </div>
       <div class="relative hidden md:block">
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
@@ -89,14 +95,16 @@
       </div>
     </div>
     <div class="flex items-center gap-md">
-      <button (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
+      <button
+        (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
         class="bg-primary-container text-white px-lg py-1.5 rounded-lg text-body-md font-semibold hover:opacity-90 transition-opacity">
         Create
       </button>
       <div class="flex items-center gap-sm text-on-surface-variant">
         <button class="p-2 hover:bg-surface-container rounded-full transition-colors relative" title="Notifications">
           <span class="material-symbols-outlined">notifications</span>
-          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+          <span
+            class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
         </button>
         <button class="p-2 hover:bg-surface-container rounded-full transition-colors" title="Help">
           <span class="material-symbols-outlined">help</span>
@@ -105,10 +113,14 @@
           <span class="material-symbols-outlined">settings</span>
         </button>
         <div class="ml-2 flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-primary/10 border border-outline-variant flex items-center justify-center text-primary font-extrabold text-xs uppercase cursor-pointer" title="User info">
+          <div
+            class="w-8 h-8 rounded-full bg-primary/10 border border-outline-variant flex items-center justify-center text-primary font-extrabold text-xs uppercase cursor-pointer"
+            title="User info">
             {{ authService.currentUser()?.substring(0,2) || 'JD' }}
           </div>
-          <button (click)="logout()" class="text-body-sm text-on-surface-variant hover:text-error font-semibold transition-colors" title="Log out">
+          <button (click)="logout()"
+            class="text-body-sm text-on-surface-variant hover:text-error font-semibold transition-colors"
+            title="Log out">
             Log out
           </button>
         </div>
@@ -118,14 +130,17 @@
 
   <div class="flex pt-16 min-h-screen">
     <!-- SIDEBAR -->
-    <aside class="bg-surface-container-low border-r border-outline-variant fixed left-0 h-[calc(100vh-64px)] w-[240px] flex flex-col py-md overflow-y-auto hidden md:flex">
+    <aside
+      class="bg-surface-container-low border-r border-outline-variant fixed left-0 h-[calc(100vh-64px)] w-[240px] flex flex-col py-md overflow-y-auto hidden md:flex">
       <div class="px-md mb-lg">
         <div class="flex items-center gap-sm mb-1">
           <div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
+            <span class="material-symbols-outlined text-on-secondary-container"
+              style="font-variation-settings: 'FILL' 1;">terminal</span>
           </div>
           <div>
-            <h2 class="text-label-caps font-label-caps uppercase tracking-wider text-on-surface-variant">Software Project</h2>
+            <h2 class="text-label-caps font-label-caps uppercase tracking-wider text-on-surface-variant">Software
+              Project</h2>
             <h1 class="text-body-md font-bold text-on-surface">My Software Team</h1>
           </div>
         </div>
@@ -135,37 +150,33 @@
         <button (click)="switchViewMode('kanban')"
           class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
           [class.bg-secondary-container!]="viewMode() === 'kanban'"
-          [class.text-on-secondary-container!]="viewMode() === 'kanban'"
-          [class.font-bold!]="viewMode() === 'kanban'"
-          [class.border-l-4!]="viewMode() === 'kanban'"
-          [class.border-primary!]="viewMode() === 'kanban'">
-          <span class="material-symbols-outlined" [ngStyle]="filledIconStyle(viewMode() === 'kanban')">view_kanban</span>
+          [class.text-on-secondary-container!]="viewMode() === 'kanban'" [class.font-bold!]="viewMode() === 'kanban'"
+          [class.border-l-4!]="viewMode() === 'kanban'" [class.border-primary!]="viewMode() === 'kanban'">
+          <span class="material-symbols-outlined"
+            [ngStyle]="filledIconStyle(viewMode() === 'kanban')">view_kanban</span>
           <span class="text-body-sm font-body-sm">Board</span>
         </button>
         <button (click)="switchViewMode('table')"
           class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
           [class.bg-secondary-container!]="viewMode() === 'table'"
-          [class.text-on-secondary-container!]="viewMode() === 'table'"
-          [class.font-bold!]="viewMode() === 'table'"
-          [class.border-l-4!]="viewMode() === 'table'"
-          [class.border-primary!]="viewMode() === 'table'">
+          [class.text-on-secondary-container!]="viewMode() === 'table'" [class.font-bold!]="viewMode() === 'table'"
+          [class.border-l-4!]="viewMode() === 'table'" [class.border-primary!]="viewMode() === 'table'">
           <span class="material-symbols-outlined">list_alt</span>
           <span class="text-body-sm font-body-sm">List</span>
         </button>
         <button (click)="switchViewMode('report')"
           class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
           [class.bg-secondary-container!]="viewMode() === 'report'"
-          [class.text-on-secondary-container!]="viewMode() === 'report'"
-          [class.font-bold!]="viewMode() === 'report'"
-          [class.border-l-4!]="viewMode() === 'report'"
-          [class.border-primary!]="viewMode() === 'report'">
+          [class.text-on-secondary-container!]="viewMode() === 'report'" [class.font-bold!]="viewMode() === 'report'"
+          [class.border-l-4!]="viewMode() === 'report'" [class.border-primary!]="viewMode() === 'report'">
           <span class="material-symbols-outlined">analytics</span>
           <span class="text-body-sm font-body-sm">Reports</span>
         </button>
       </nav>
 
       <div class="mt-auto border-t border-outline-variant pt-md">
-        <button class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out">
+        <button
+          class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out">
           <span class="material-symbols-outlined">settings</span>
           <span class="text-body-sm font-body-sm">Settings</span>
         </button>
@@ -175,7 +186,8 @@
     <!-- MAIN CONTENT -->
     <main class="flex-1 md:ml-[240px] p-lg">
       <!-- Error Banner -->
-      <div *ngIf="errorMessage()" class="bg-error-container border border-error/30 text-on-error-container px-4 py-3 rounded-lg text-body-sm mb-5 font-semibold flex items-start gap-2">
+      <div *ngIf="errorMessage()"
+        class="bg-error-container border border-error/30 text-on-error-container px-4 py-3 rounded-lg text-body-sm mb-5 font-semibold flex items-start gap-2">
         <span class="material-symbols-outlined mt-0.5">error</span>
         <span>{{ errorMessage() }}</span>
       </div>
@@ -194,18 +206,24 @@
               <h1 class="text-headline-md font-headline-md text-on-surface">Board</h1>
             </div>
             <div class="flex gap-sm">
-              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">share</span></button>
-              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">bolt</span></button>
-              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">comment</span></button>
-              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined">open_in_full</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span
+                  class="material-symbols-outlined">share</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span
+                  class="material-symbols-outlined">bolt</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span
+                  class="material-symbols-outlined">comment</span></button>
+              <button class="p-2 hover:bg-surface-container rounded transition-colors"><span
+                  class="material-symbols-outlined">open_in_full</span></button>
             </div>
           </div>
 
           <!-- Filters -->
           <div class="flex flex-wrap items-center gap-md mb-gutter">
             <div class="relative">
-              <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-              <input type="text" placeholder="Search board" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+              <span
+                class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+              <input type="text" placeholder="Search board" [ngModel]="searchQuery()"
+                (ngModelChange)="searchQuery.set($event)"
                 class="pl-9 pr-3 py-1.5 text-body-md border border-outline-variant rounded hover:bg-surface-container-low transition-colors w-48 focus:border-primary focus:ring-0" />
             </div>
             <div class="ml-auto flex items-center gap-sm">
@@ -226,37 +244,44 @@
             <div class="flex items-center justify-between px-xs">
               <div class="flex items-center gap-sm">
                 <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">TO DO</span>
-                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{ getTasksByStatus(TaskStatus.Todo).length }}</span>
+                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{
+                  getTasksByStatus(TaskStatus.Todo).length }}</span>
               </div>
-              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span
+                  class="material-symbols-outlined">more_horiz</span></button>
             </div>
 
-            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.Todo)">
-              <div *ngFor="let task of getTasksByStatus(TaskStatus.Todo)"
-                [draggable]="true"
-                (dragstart)="onDragStart(task, $event)"
-                (click)="openEditModal(task)"
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()"
+              (drop)="onTaskDrop(TaskStatus.Todo)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.Todo)" [draggable]="true"
+                (dragstart)="onDragStart(task, $event)" (click)="openEditModal(task)"
                 class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing group">
                 <div class="flex items-center gap-2 mb-md">
-                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id
+                    }}</span>
                   <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
                 </div>
                 <h3 class="text-body-md font-semibold text-on-surface mb-md">{{ task.title }}</h3>
-                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate" [class.text-error]="isOverdue(task)">
+                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate"
+                  [class.text-error]="isOverdue(task)">
                   <span class="material-symbols-outlined text-[16px]">calendar_today</span>
-                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy'
+                    }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[18px]">check_box</span>
                   </div>
-                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                  <div
+                    class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase"
+                    [title]="getTaskAssignee(task)">
                     {{ getTaskAssignee(task).substring(0,2) }}
                   </div>
                 </div>
               </div>
 
-              <div *ngIf="getTasksByStatus(TaskStatus.Todo).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+              <div *ngIf="getTasksByStatus(TaskStatus.Todo).length === 0"
+                class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
                 <span class="material-symbols-outlined text-[40px] mb-2">move_to_inbox</span>
                 <p class="text-body-sm">No tasks yet</p>
               </div>
@@ -274,38 +299,45 @@
             <div class="flex items-center justify-between px-xs">
               <div class="flex items-center gap-sm">
                 <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">IN PROGRESS</span>
-                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{ getTasksByStatus(TaskStatus.InProgress).length }}</span>
+                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{
+                  getTasksByStatus(TaskStatus.InProgress).length }}</span>
               </div>
-              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span
+                  class="material-symbols-outlined">more_horiz</span></button>
             </div>
 
-            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.InProgress)">
-              <div *ngFor="let task of getTasksByStatus(TaskStatus.InProgress)"
-                [draggable]="true"
-                (dragstart)="onDragStart(task, $event)"
-                (click)="openEditModal(task)"
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()"
+              (drop)="onTaskDrop(TaskStatus.InProgress)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.InProgress)" [draggable]="true"
+                (dragstart)="onDragStart(task, $event)" (click)="openEditModal(task)"
                 class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 hover:border-primary/50 transition-all border-l-4 border-l-primary cursor-grab active:cursor-grabbing group">
                 <div class="flex items-center gap-2 mb-md">
-                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id
+                    }}</span>
                   <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
                 </div>
                 <h3 class="text-body-md font-semibold text-on-surface mb-md">{{ task.title }}</h3>
-                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate" [class.text-error]="isOverdue(task)">
+                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate"
+                  [class.text-error]="isOverdue(task)">
                   <span class="material-symbols-outlined text-[16px]">calendar_today</span>
-                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy'
+                    }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-tertiary text-[18px]">bookmark</span>
                     <span class="text-label-caps text-on-surface-variant">{{ task.priority }}</span>
                   </div>
-                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                  <div
+                    class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase"
+                    [title]="getTaskAssignee(task)">
                     {{ getTaskAssignee(task).substring(0,2) }}
                   </div>
                 </div>
               </div>
 
-              <div *ngIf="getTasksByStatus(TaskStatus.InProgress).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+              <div *ngIf="getTasksByStatus(TaskStatus.InProgress).length === 0"
+                class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
                 <span class="material-symbols-outlined text-[40px] mb-2">move_to_inbox</span>
                 <p class="text-body-sm">No tasks in progress</p>
               </div>
@@ -323,37 +355,44 @@
             <div class="flex items-center justify-between px-xs">
               <div class="flex items-center gap-sm">
                 <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">IN REVIEW</span>
-                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{ getTasksByStatus(TaskStatus.InReview).length }}</span>
+                <span class="bg-surface-container-highest px-2 py-0.5 rounded-full text-body-sm font-bold">{{
+                  getTasksByStatus(TaskStatus.InReview).length }}</span>
               </div>
-              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span
+                  class="material-symbols-outlined">more_horiz</span></button>
             </div>
 
-            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.InReview)">
-              <div *ngFor="let task of getTasksByStatus(TaskStatus.InReview)"
-                [draggable]="true"
-                (dragstart)="onDragStart(task, $event)"
-                (click)="openEditModal(task)"
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()"
+              (drop)="onTaskDrop(TaskStatus.InReview)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.InReview)" [draggable]="true"
+                (dragstart)="onDragStart(task, $event)" (click)="openEditModal(task)"
                 class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing group">
                 <div class="flex items-center gap-2 mb-md">
-                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id
+                    }}</span>
                   <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
                 </div>
                 <h3 class="text-body-md font-semibold text-on-surface mb-md">{{ task.title }}</h3>
-                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate" [class.text-error]="isOverdue(task)">
+                <div class="flex items-center gap-xs text-on-surface-variant mb-gutter" *ngIf="task.dueDate"
+                  [class.text-error]="isOverdue(task)">
                   <span class="material-symbols-outlined text-[16px]">calendar_today</span>
-                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                  <span class="text-body-sm" [class.font-bold]="isOverdue(task)">{{ task.dueDate | date:'MMM d, yyyy'
+                    }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[18px]">rate_review</span>
                   </div>
-                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                  <div
+                    class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase"
+                    [title]="getTaskAssignee(task)">
                     {{ getTaskAssignee(task).substring(0,2) }}
                   </div>
                 </div>
               </div>
 
-              <div *ngIf="getTasksByStatus(TaskStatus.InReview).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+              <div *ngIf="getTasksByStatus(TaskStatus.InReview).length === 0"
+                class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
                 <span class="material-symbols-outlined text-[40px] mb-2">move_to_inbox</span>
                 <p class="text-body-sm">No tasks in review yet</p>
               </div>
@@ -371,19 +410,22 @@
             <div class="flex items-center justify-between px-xs">
               <div class="flex items-center gap-sm">
                 <span class="text-label-caps font-label-caps text-on-surface-variant uppercase">DONE</span>
-                <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                <span class="material-symbols-outlined text-secondary text-[16px]"
+                  style="font-variation-settings: 'FILL' 1;">check_circle</span>
               </div>
-              <button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">more_horiz</span></button>
+              <button class="p-1 hover:bg-surface-container rounded-full"><span
+                  class="material-symbols-outlined">more_horiz</span></button>
             </div>
 
-            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()" (drop)="onTaskDrop(TaskStatus.Done)">
-              <div *ngFor="let task of getTasksByStatus(TaskStatus.Done)"
-                [draggable]="true"
-                (dragstart)="onDragStart(task, $event)"
-                (click)="openEditModal(task)"
+            <div class="flex flex-col gap-md flex-1" (dragover)="$event.preventDefault()"
+              (drop)="onTaskDrop(TaskStatus.Done)">
+              <div *ngFor="let task of getTasksByStatus(TaskStatus.Done)" [draggable]="true"
+                (dragstart)="onDragStart(task, $event)" (click)="openEditModal(task)"
                 class="bg-surface-container-lowest p-gutter rounded-lg custom-shadow border border-outline-variant/30 opacity-70 cursor-grab active:cursor-grabbing group">
                 <div class="flex items-center gap-2 mb-md">
-                  <span class="bg-surface-container-highest text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{ task.id }}</span>
+                  <span
+                    class="bg-surface-container-highest text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">KAN-{{
+                    task.id }}</span>
                   <span class="text-label-caps text-on-surface-variant">{{ task.taskType }}</span>
                 </div>
                 <h3 class="text-body-md font-semibold text-on-surface line-through mb-md">{{ task.title }}</h3>
@@ -391,13 +433,16 @@
                   <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-outline text-[18px]">check_box</span>
                   </div>
-                  <div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase" [title]="getTaskAssignee(task)">
+                  <div
+                    class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant text-[10px] font-bold uppercase"
+                    [title]="getTaskAssignee(task)">
                     {{ getTaskAssignee(task).substring(0,2) }}
                   </div>
                 </div>
               </div>
 
-              <div *ngIf="getTasksByStatus(TaskStatus.Done).length === 0" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
+              <div *ngIf="getTasksByStatus(TaskStatus.Done).length === 0"
+                class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-md text-center opacity-50">
                 <span class="material-symbols-outlined text-[40px] mb-2">check_circle</span>
                 <p class="text-body-sm">No completed tasks</p>
               </div>
@@ -422,10 +467,7 @@
           </nav>
           <h2 class="text-headline-md font-headline-md text-on-surface">Backlog</h2>
         </div>
-        <app-task-table
-          [tasks]="tasks()"
-          (onEdit)="openEditModal($event)"
-          (onDelete)="deleteTask($event)"
+        <app-task-table [tasks]="tasks()" (onEdit)="openEditModal($event)" (onDelete)="deleteTask($event)"
           (onStatusChange)="onQuickStatusChange($event)"></app-task-table>
       </div>
 
@@ -457,11 +499,13 @@
   </div>
 
   <!-- Mobile FAB -->
-  <button (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
+  <button
+    (click)="openEditModal({ id: 0, title: '', status: TaskStatus.Todo, priority: TaskPriority.Medium, taskType: TaskType.Task, createdDate: '', subTasks: [], customFields: [] })"
     class="fixed bottom-lg right-lg w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95 md:hidden">
     <span class="material-symbols-outlined">add</span>
   </button>
 </ng-container>
 
 <!-- SLIDE-OVER DRAWER -->
-<app-task-drawer *ngIf="isEditModalOpen()" [task]="selectedTaskForEdit()" (onClose)="closeEditModal()" (onSaved)="loadTasks()"></app-task-drawer>
+<app-task-drawer *ngIf="isEditModalOpen()" [task]="selectedTaskForEdit()" (onClose)="closeEditModal()"
+  (onSaved)="loadTasks()"></app-task-drawer>
