@@ -83,6 +83,7 @@ interface HistoryItem {
                   (drop)="onEditorDrop($event)"
                   (dragover)="$event.preventDefault()"
                   (paste)="onEditorPaste($event)"
+                  (click)="onEditorClick($event)"
                   placeholder="Nhập mô tả HTML..."
                 ></div>
               </div>
@@ -1316,6 +1317,18 @@ export class TaskDrawerComponent {
     this.editingDescription.set(html);
   }
 
+  protected onEditorClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const anchor = target.closest('a');
+    if (anchor) {
+      const url = anchor.getAttribute('href');
+      if (url) {
+        window.open(url, '_blank');
+        event.preventDefault();
+      }
+    }
+  }
+
   private updateDescriptionFromEditor(): void {
     if (this.editorDivElement) {
       this.editingDescription.set(this.editorDivElement.nativeElement.innerHTML);
@@ -1390,7 +1403,59 @@ export class TaskDrawerComponent {
     const baseUrl = this.taskService.apiUrl.replace('/tasks', '');
     let formatted = desc.replace(/src="\/uploads\//g, `src="${baseUrl}/uploads/`);
     formatted = formatted.replace(/src="uploads\//g, `src="${baseUrl}/uploads/`);
+    
+    // Tự động chuyển đổi bất kỳ URL nào trong văn bản (bắt đầu bằng http, https) thành link <a>
+    if (typeof DOMParser !== 'undefined' && typeof document !== 'undefined') {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(formatted, 'text/html');
+        this.linkifyHtmlNode(doc.body);
+        formatted = doc.body.innerHTML;
+      } catch (e) {
+        console.error('Lỗi khi tự động chuyển đổi URL thành liên kết:', e);
+      }
+    }
+    
     return formatted;
+  }
+
+  private linkifyHtmlNode(node: Node): void {
+    if (!node) return;
+    
+    // Bỏ qua các thẻ <a>, <script>, <style> để không ghi đè liên kết hiện có hoặc mã script/style
+    const name = node.nodeName.toLowerCase();
+    if (name === 'a' || name === 'script' || name === 'style') {
+      return;
+    }
+
+    const childNodes = Array.from(node.childNodes);
+    for (const child of childNodes) {
+      if (child.nodeType === 3) { // Thẻ text (Text Node)
+        const text = child.textContent || '';
+        const urlRegex = /(https?:\/\/[^\s"'<>\(\)]*[^\s"'<>\(\),;.!?])/g;
+        if (urlRegex.test(text)) {
+          const parts = text.split(urlRegex);
+          const fragment = document.createDocumentFragment();
+          
+          for (const part of parts) {
+            if (urlRegex.test(part)) {
+              const link = document.createElement('a');
+              link.href = part;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              link.className = 'text-primary hover:underline';
+              link.textContent = part;
+              fragment.appendChild(link);
+            } else if (part) {
+              fragment.appendChild(document.createTextNode(part));
+            }
+          }
+          node.replaceChild(fragment, child);
+        }
+      } else if (child.nodeType === 1) { // Thẻ element (Element Node)
+        this.linkifyHtmlNode(child);
+      }
+    }
   }
 
   private uploadFile(file: File): void {
