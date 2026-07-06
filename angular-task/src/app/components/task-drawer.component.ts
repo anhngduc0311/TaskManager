@@ -320,6 +320,21 @@ interface HistoryItem {
               />
             </div>
 
+            <!-- Công việc cha (Parent Task) -->
+            <div class="attribute-group" *ngIf="task && task.id > 0">
+              <label class="attribute-label">Công việc cha (Parent Task)</label>
+              <select
+                [ngModel]="editingParentTaskId()"
+                (ngModelChange)="onParentTaskChange($event)"
+                class="attribute-control"
+              >
+                <option [value]="'null'">Không có (Không)</option>
+                <option *ngFor="let t of getCandidateParentTasks()" [value]="t.id">
+                  KAN-{{ t.id }} - {{ t.title }}
+                </option>
+              </select>
+            </div>
+
             <hr class="attr-divider" />
 
             <!-- DYNAMIC CUSTOM FIELDS (Mô hình EAV) -->
@@ -1006,6 +1021,7 @@ export class TaskDrawerComponent {
   @ViewChild('editorDiv') editorDivElement?: ElementRef<HTMLDivElement>;
 
   // Inputs & Outputs
+  @Input() allTasks: TaskItem[] = [];
   @Output() onClose = new EventEmitter<void>();
   @Output() onSaved = new EventEmitter<void>();
 
@@ -1041,6 +1057,7 @@ export class TaskDrawerComponent {
   protected readonly editingSubTasks = signal<SubTaskUpdateDto[]>([]);
   protected readonly taskAssigneeId = signal<number | null>(null);
   protected readonly taskLabelsInput = signal('');
+  protected readonly editingParentTaskId = signal<number | null>(null);
   
   // Biến giữ nội dung HTML mô tả ban đầu (ngăn con trỏ nhảy ngược khi đang nhập)
   protected readonly initialDescriptionHTML = signal('');
@@ -1076,6 +1093,7 @@ export class TaskDrawerComponent {
     this.editingStoryPoints.set(task.storyPoints || null);
     this.editingPriority.set(task.priority);
     this.editingTaskType.set(task.taskType);
+    this.editingParentTaskId.set(task.parentTaskId || null);
 
     // Custom Fields EAV
     const cfUpdates = (task.customFields || []).map(cf => ({
@@ -1510,6 +1528,7 @@ export class TaskDrawerComponent {
       storyPoints: this.editingStoryPoints() || undefined,
       priority: this.editingPriority(),
       taskType: this.editingTaskType(),
+      parentTaskId: this.editingParentTaskId() || undefined,
       customFields: this.editingCustomFields(),
       subTasks: this.editingSubTasks()
     };
@@ -1528,5 +1547,20 @@ export class TaskDrawerComponent {
 
   protected close(): void {
     this.onClose.emit();
+  }
+
+  protected getCandidateParentTasks(): TaskItem[] {
+    if (!this.task) return [];
+    const currentId = this.task.id;
+    const subIds = (this.task.subTasks || []).map(s => s.id);
+    return this.allTasks.filter(t => t.id !== currentId && !subIds.includes(t.id) && !t.parentTaskId);
+  }
+
+  protected onParentTaskChange(val: any): void {
+    if (val === 'null' || val === null || val === undefined || val === '') {
+      this.editingParentTaskId.set(null);
+    } else {
+      this.editingParentTaskId.set(Number(val));
+    }
   }
 }

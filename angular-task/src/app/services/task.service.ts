@@ -93,4 +93,35 @@ export class TaskService {
     const reportsUrl = this.apiUrl.replace('/tasks', '/reports');
     return this.http.get<SprintReportDto>(`${reportsUrl}/sprint/${sprintId}`);
   }
+
+  /**
+   * Lấy danh sách toàn bộ định nghĩa trường động.
+   */
+  getCustomFields(): Observable<any[]> {
+    const cfUrl = this.apiUrl.replace('/tasks', '/customfields');
+    return this.http.get<any[]>(cfUrl);
+  }
+
+  /**
+   * Tạo mới định nghĩa trường động.
+   */
+  createCustomField(cf: any): Observable<any> {
+    const cfUrl = this.apiUrl.replace('/tasks', '/customfields');
+    return this.http.post<any>(cfUrl, cf);
+  }
+
+  /**
+   * Xóa một định nghĩa trường động.
+   */
+  deleteCustomField(id: number): Observable<any> {
+    const cfUrl = this.apiUrl.replace('/tasks', '/customfields');
+    return this.http.delete<any>(`${cfUrl}/${id}`);
+  }
+
+  /**
+   * Lọc danh sách các công việc gốc theo điều kiện động trên các trường tùy chỉnh.
+   */
+  filterTasks(filter: any): Observable<TaskItem[]> {
+    return this.http.post<TaskItem[]>(`${this.apiUrl}/filter`, filter);
+  }
 }

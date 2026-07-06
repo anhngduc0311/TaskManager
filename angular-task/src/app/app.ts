@@ -9,10 +9,20 @@ import { TaskItem, TaskItemStatus, TaskPriority, TaskType, CustomFieldType, Crea
 import { TaskTableComponent } from './components/task-table.component';
 import { TaskDrawerComponent } from './components/task-drawer.component';
 import { TaskDashboardComponent } from './components/task-dashboard.component';
+import { CustomFieldsManagementComponent } from './components/custom-fields-management.component';
+import { GanttChartComponent } from './components/gantt-chart.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, FormsModule, TaskTableComponent, TaskDrawerComponent, TaskDashboardComponent], // Register standalone components
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    TaskTableComponent, 
+    TaskDrawerComponent, 
+    TaskDashboardComponent,
+    CustomFieldsManagementComponent,
+    GanttChartComponent
+  ], // Register standalone components
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -30,8 +40,14 @@ export class App implements OnInit {
   protected readonly TaskType = TaskType;
   protected readonly CustomFieldType = CustomFieldType;
 
-  // Signal quản lý View Mode (Bảng Kanban, Bảng IT Table hoặc Dashboard Báo cáo & Timeline)
-  protected readonly viewMode = signal<'kanban' | 'table' | 'report'>('kanban');
+  // Signal quản lý View Mode (Bảng Kanban, Bảng IT Table hoặc Dashboard Báo cáo & Timeline, Gantt, Custom Fields)
+  protected readonly viewMode = signal<'kanban' | 'table' | 'report' | 'gantt' | 'custom-fields'>('kanban');
+
+  // Signals cho Bộ lọc nâng cao (Advanced Filter)
+  protected readonly isAdvancedFilterOpen = signal(false);
+  protected readonly filterLogicalOperator = signal<'AND' | 'OR'>('AND');
+  protected readonly filterConditions = signal<Array<{ customFieldId: number, operator: string, value: string }>>([]);
+  protected readonly availableCustomFields = signal<any[]>([]);
 
   // Signal lưu danh sách Tasks gốc (tải từ API)
   protected readonly tasks = signal<TaskItem[]>([]);
@@ -282,7 +298,65 @@ export class App implements OnInit {
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
       this.loadTasks();
+      this.loadCustomFields();
     }
+  }
+
+  protected loadCustomFields(): void {
+    this.taskService.getCustomFields().subscribe({
+      next: (fields) => {
+        this.availableCustomFields.set(fields);
+      },
+      error: (err) => console.error('Lỗi tải các trường động:', err)
+    });
+  }
+
+  protected addFilterCondition(): void {
+    const fields = this.availableCustomFields();
+    if (fields.length === 0) return;
+    this.filterConditions.update(conds => [
+      ...conds, 
+      { customFieldId: fields[0].id, operator: 'Equals', value: '' }
+    ]);
+  }
+
+  protected removeFilterCondition(index: number): void {
+    this.filterConditions.update(conds => conds.filter((_, i) => i !== index));
+  }
+
+  protected clearAdvancedFilters(): void {
+    this.filterConditions.set([]);
+    this.loadTasks();
+  }
+
+  protected applyAdvancedFilters(): void {
+    const conditions = this.filterConditions().filter(c => c.value !== '');
+    if (conditions.length === 0) {
+      this.loadTasks();
+      return;
+    }
+
+    const payload = {
+      logicalOperator: this.filterLogicalOperator(),
+      conditions: conditions.map(c => ({
+        customFieldId: Number(c.customFieldId),
+        operator: c.operator,
+        value: c.value
+      }))
+    };
+
+    this.taskService.filterTasks(payload).subscribe({
+      next: (filteredTasks) => {
+        this.tasks.set(filteredTasks);
+        this.successMessage.set('Đã áp dụng bộ lọc nâng cao!');
+        setTimeout(() => this.successMessage.set(null), 3000);
+      },
+      error: (err) => {
+        console.error('Lỗi lọc:', err);
+        this.errorMessage.set('Lỗi khi áp dụng bộ lọc: ' + (err.error?.Message || err.message));
+        setTimeout(() => this.errorMessage.set(null), 4000);
+      }
+    });
   }
 
   loadTasks(): void {
@@ -366,7 +440,7 @@ export class App implements OnInit {
   }
 
   // Chuyển đổi View Mode
-  switchViewMode(mode: 'kanban' | 'table' | 'report'): void {
+  switchViewMode(mode: 'kanban' | 'table' | 'report' | 'gantt' | 'custom-fields'): void {
     this.viewMode.set(mode);
     if (mode === 'report') {
       this.loadSprintReport(0); // Load Sprint giả lập hoặc mặc định

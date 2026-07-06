@@ -172,6 +172,22 @@
           <span class="material-symbols-outlined">analytics</span>
           <span class="text-body-sm font-body-sm">Reports</span>
         </button>
+        <button (click)="switchViewMode('gantt')"
+          class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
+          [class.bg-secondary-container!]="viewMode() === 'gantt'"
+          [class.text-on-secondary-container!]="viewMode() === 'gantt'" [class.font-bold!]="viewMode() === 'gantt'"
+          [class.border-l-4!]="viewMode() === 'gantt'" [class.border-primary!]="viewMode() === 'gantt'">
+          <span class="material-symbols-outlined">timeline</span>
+          <span class="text-body-sm font-body-sm">Gantt Chart</span>
+        </button>
+        <button (click)="switchViewMode('custom-fields')"
+          class="w-full flex items-center gap-md px-md py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 ease-in-out"
+          [class.bg-secondary-container!]="viewMode() === 'custom-fields'"
+          [class.text-on-secondary-container!]="viewMode() === 'custom-fields'" [class.font-bold!]="viewMode() === 'custom-fields'"
+          [class.border-l-4!]="viewMode() === 'custom-fields'" [class.border-primary!]="viewMode() === 'custom-fields'">
+          <span class="material-symbols-outlined">settings_suggest</span>
+          <span class="text-body-sm font-body-sm">Custom Fields</span>
+        </button>
       </nav>
 
       <div class="mt-auto border-t border-outline-variant pt-md">
@@ -227,6 +243,17 @@
                 class="pl-9 pr-3 py-1.5 text-body-md border border-outline-variant rounded hover:bg-surface-container-low transition-colors w-48 focus:border-primary focus:ring-0" />
             </div>
 
+            <!-- Advanced Filter Trigger Button -->
+            <button
+              (click)="isAdvancedFilterOpen.set(!isAdvancedFilterOpen())"
+              [class]="isAdvancedFilterOpen() 
+                ? 'bg-primary text-white border border-primary px-3 py-1.5 text-body-md rounded-lg flex items-center gap-1 hover:opacity-90 transition-all font-semibold cursor-pointer' 
+                : 'bg-surface border border-outline-variant px-3 py-1.5 text-body-md rounded-lg flex items-center gap-1 hover:bg-surface-container-low transition-all text-on-surface-variant font-semibold cursor-pointer'"
+            >
+              <span class="material-symbols-outlined text-sm">filter_alt</span>
+              Lọc nâng cao (EAV)
+            </button>
+
             <!-- Project Member Avatars (Filter Bar) -->
             <div class="flex items-center gap-1.5 bg-surface-container px-3 py-1 rounded-full border border-outline-variant/60">
               <span class="text-body-sm font-semibold text-on-surface-variant mr-1">Assignees:</span>
@@ -281,6 +308,75 @@
                 <option>Assignee</option>
                 <option>Epic</option>
               </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Filter Panel -->
+        <div *ngIf="isAdvancedFilterOpen()" class="bg-surface-container-low border border-outline-variant rounded-xl p-md mb-gutter space-y-4 shadow-sm">
+          <div class="flex justify-between items-center pb-2 border-b border-outline-variant/50">
+            <span class="text-title-sm font-bold text-primary flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">filter_alt</span>
+              Cấu hình bộ lọc trường động
+            </span>
+            <div class="flex items-center gap-3">
+              <span class="text-body-sm font-semibold text-on-surface-variant">Toán tử logic giữa các điều kiện:</span>
+              <select [ngModel]="filterLogicalOperator()" (ngModelChange)="filterLogicalOperator.set($event)"
+                class="bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 text-body-sm text-on-surface focus:outline-none focus:border-primary font-semibold">
+                <option value="AND">Tất cả (AND)</option>
+                <option value="OR">Ít nhất một (OR)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- List of current conditions -->
+          <div class="space-y-2">
+            <div *ngFor="let cond of filterConditions(); let i = index" class="flex flex-wrap items-center gap-2 bg-surface-container-lowest p-2 rounded-lg border border-outline-variant/40">
+              <span class="text-body-sm font-bold text-gray-500">Điều kiện #{{ i + 1 }}</span>
+
+              <!-- Custom Field Selector -->
+              <select [(ngModel)]="cond.customFieldId" class="bg-surface border border-outline-variant rounded px-2 py-1 text-body-sm focus:outline-none focus:border-primary">
+                <option *ngFor="let cf of availableCustomFields()" [value]="cf.id">{{ cf.name }} ({{ cf.dataType }})</option>
+              </select>
+
+              <!-- Comparison Operator Selector -->
+              <select [(ngModel)]="cond.operator" class="bg-surface border border-outline-variant rounded px-2 py-1 text-body-sm focus:outline-none focus:border-primary">
+                <option value="Equals">Bằng (=)</option>
+                <option value="Contains">Chứa</option>
+                <option value="GreaterThan">Lớn hơn (&gt;)</option>
+                <option value="LessThan">Nhỏ hơn (&lt;)</option>
+                <option value="IsTrue">Là Đúng (True)</option>
+                <option value="IsFalse">Là Sai (False)</option>
+              </select>
+
+              <!-- Value Input (hide if operator is IsTrue/IsFalse) -->
+              <input *ngIf="cond.operator !== 'IsTrue' && cond.operator !== 'IsFalse'"
+                type="text" [(ngModel)]="cond.value" placeholder="Giá trị lọc..."
+                class="bg-surface border border-outline-variant rounded px-3 py-1 text-body-sm focus:outline-none focus:border-primary w-40" />
+
+              <!-- Remove button -->
+              <button (click)="removeFilterCondition(i)" class="text-error hover:bg-error/10 p-1 rounded-full transition-colors cursor-pointer" title="Xóa điều kiện này">
+                <span class="material-symbols-outlined text-sm">delete</span>
+              </button>
+            </div>
+
+            <div *ngIf="filterConditions().length === 0" class="text-center py-4 text-body-sm text-gray-400 font-medium italic">
+              Chưa cấu hình điều kiện lọc nào. Nhấn "Thêm điều kiện" để bắt đầu.
+            </div>
+          </div>
+
+          <!-- Footer actions of panel -->
+          <div class="flex justify-between items-center pt-2 border-t border-outline-variant/50">
+            <button (click)="addFilterCondition()" class="text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-body-sm font-semibold flex items-center gap-1 transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-sm">add</span> Thêm điều kiện
+            </button>
+            <div class="flex gap-2">
+              <button (click)="clearAdvancedFilters()" class="text-outline hover:bg-surface-container px-3 py-1.5 rounded-lg text-body-sm font-semibold transition-colors cursor-pointer">
+                Xóa bộ lọc
+              </button>
+              <button (click)="applyAdvancedFilters()" class="bg-primary text-white hover:opacity-90 px-4 py-1.5 rounded-lg text-body-sm font-bold shadow-sm transition-all cursor-pointer">
+                Áp dụng bộ lọc
+              </button>
             </div>
           </div>
         </div>
@@ -543,6 +639,16 @@
         </div>
         <app-task-dashboard [tasks]="tasks()" [report]="sprintReport()"></app-task-dashboard>
       </div>
+
+      <!-- ==================== GANTT VIEW ==================== -->
+      <div *ngIf="viewMode() === 'gantt'" class="flex flex-col gap-6">
+        <app-gantt-chart [tasks]="tasks()"></app-gantt-chart>
+      </div>
+
+      <!-- ==================== CUSTOM FIELDS VIEW ==================== -->
+      <div *ngIf="viewMode() === 'custom-fields'" class="flex flex-col gap-6">
+        <app-custom-fields-management></app-custom-fields-management>
+      </div>
     </main>
   </div>
 
@@ -555,7 +661,7 @@
 </ng-container>
 
 <!-- SLIDE-OVER DRAWER -->
-<app-task-drawer *ngIf="isEditModalOpen()" [task]="selectedTaskForEdit()" (onClose)="closeEditModal()"
+<app-task-drawer *ngIf="isEditModalOpen()" [task]="selectedTaskForEdit()" [allTasks]="tasks()" (onClose)="closeEditModal()"
   (onSaved)="loadTasks()"></app-task-drawer>
 
 <!-- ADD PEOPLE TO PROJECT MODAL -->

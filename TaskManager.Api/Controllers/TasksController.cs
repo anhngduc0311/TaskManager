@@ -20,6 +20,19 @@ namespace TaskManager.Api.Controllers
         public int? AssigneeId { get; set; }
     }
 
+    public class FilterConditionDto
+    {
+        public int CustomFieldId { get; set; }
+        public string Operator { get; set; } = "Equals"; // Equals, Contains, GreaterThan, LessThan, IsTrue, IsFalse
+        public string Value { get; set; } = string.Empty;
+    }
+
+    public class TaskFilterDto
+    {
+        public string LogicalOperator { get; set; } = "AND"; // AND or OR
+        public List<FilterConditionDto> Conditions { get; set; } = new List<FilterConditionDto>();
+    }
+
     [Route("api/[controller]")]
     [ApiController] // Tự động kiểm tra tính hợp lệ của Model
     [Authorize] // Yêu cầu Đăng nhập cho tất cả các API trong controller này
@@ -82,6 +95,45 @@ namespace TaskManager.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = $"Lỗi hệ thống: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// POST: api/tasks/filter
+        /// Lọc danh sách các công việc gốc theo điều kiện động trên các trường tùy chỉnh (EAV).
+        /// </summary>
+        [HttpPost("filter")]
+        public async Task<ActionResult<IEnumerable<TaskDetailsResponseDto>>> FilterTasks([FromBody] TaskFilterDto filter)
+        {
+            try
+            {
+                int userId = GetCurrentUserId();
+
+                // Lấy toàn bộ trường động trong hệ thống
+                var allCustomFields = await _context.CustomFields.ToListAsync();
+
+                // Lấy các task gốc của user
+                var rootTasks = await _context.TaskItems
+                                              .Include(t => t.SubTasks)
+                                              .Include(t => t.CustomValues)
+                                                  .ThenInclude(cv => cv.CustomField)
+                                              .Where(t => (t.AssigneeId == userId || t.ReporterId == userId) && t.ParentTaskId == null)
+                                              .ToListAsync();
+
+                // Tiến hành lọc theo điều kiện động
+                var filtered = rootTasks.Where(task => EvaluateConditions(task, filter, allCustomFields)).ToList();
+
+                var response = filtered.Select(task => MapToDetailsDto(task, allCustomFields)).ToList();
+
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Lỗi hệ thống khi lọc: {ex.Message}" });
             }
         }
 
@@ -603,6 +655,95 @@ namespace TaskManager.Api.Controllers
                 case CustomFieldType.Boolean:
                     return bool.TryParse(value, out _) || value == "1" || value == "0";
 
+                default:
+                    return false;
+            }
+        }
+
+        private bool EvaluateConditions(TaskItem task, TaskFilterDto filter, List<CustomField> allCustomFields)
+        {
+            if (filter.Conditions == null || filter.Conditions.Count == 0)
+                return true;
+
+            bool isAnd = filter.LogicalOperator.Equals("AND", StringComparison.OrdinalIgnoreCase);
+
+            foreach (var cond in filter.Conditions)
+            {
+                var field = allCustomFields.FirstOrDefault(cf => cf.Id == cond.CustomFieldId);
+                if (field == null)
+                {
+                    if (isAnd) return false;
+                    continue;
+                }
+
+                var taskVal = task.CustomValues.FirstOrDefault(cv => cv.CustomFieldId == cond.CustomFieldId);
+                string val = taskVal?.Value ?? field.DefaultValue ?? string.Empty;
+
+                bool isMatch = MatchConditionValue(val, cond.Operator, cond.Value, field.DataType);
+
+                if (isAnd && !isMatch)
+                {
+                    return false;
+                }
+                if (!isAnd && isMatch)
+                {
+                    return true;
+                }
+            }
+
+            return isAnd;
+        }
+
+        private bool MatchConditionValue(string actualVal, string op, string filterVal, CustomFieldType type)
+        {
+            if (op.Equals("IsTrue", StringComparison.OrdinalIgnoreCase))
+            {
+                return actualVal.Equals("true", StringComparison.OrdinalIgnoreCase) || actualVal == "1";
+            }
+            if (op.Equals("IsFalse", StringComparison.OrdinalIgnoreCase))
+            {
+                return actualVal.Equals("false", StringComparison.OrdinalIgnoreCase) || actualVal == "0" || string.IsNullOrEmpty(actualVal);
+            }
+
+            if (type == CustomFieldType.Number)
+            {
+                if (decimal.TryParse(actualVal, out decimal actDec) && decimal.TryParse(filterVal, out decimal filtDec))
+                {
+                    switch (op.ToLower())
+                    {
+                        case "equals": return actDec == filtDec;
+                        case "contains": return actualVal.Contains(filterVal);
+                        case "greaterthan": return actDec > filtDec;
+                        case "lessthan": return actDec < filtDec;
+                    }
+                }
+            }
+            else if (type == CustomFieldType.Date)
+            {
+                if (DateTime.TryParse(actualVal, out DateTime actDate) && DateTime.TryParse(filterVal, out DateTime filtDate))
+                {
+                    switch (op.ToLower())
+                    {
+                        case "equals": return actDate.Date == filtDate.Date;
+                        case "greaterthan": return actDate.Date > filtDate.Date;
+                        case "lessthan": return actDate.Date < filtDate.Date;
+                    }
+                }
+            }
+
+            actualVal ??= string.Empty;
+            filterVal ??= string.Empty;
+
+            switch (op.ToLower())
+            {
+                case "equals":
+                    return actualVal.Equals(filterVal, StringComparison.OrdinalIgnoreCase);
+                case "contains":
+                    return actualVal.Contains(filterVal, StringComparison.OrdinalIgnoreCase);
+                case "greaterthan":
+                    return string.Compare(actualVal, filterVal, StringComparison.OrdinalIgnoreCase) > 0;
+                case "lessthan":
+                    return string.Compare(actualVal, filterVal, StringComparison.OrdinalIgnoreCase) < 0;
                 default:
                     return false;
             }
