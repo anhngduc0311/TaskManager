@@ -63,7 +63,7 @@ Dockerfile đa giai đoạn giúp giảm thiểu kích thước ảnh (image) ch
 * Tự động tạo thư mục `wwwroot` để chứa các file tải lên.
 
 ### B. Dockerfile cho Frontend ([angular-task/Dockerfile](file:///d:/TaskManager/angular-task/Dockerfile))
-* **Giai đoạn 1**: Sử dụng `node:20-alpine` để cài đặt dependencies (`npm ci`) và build ứng dụng Angular ở chế độ production (`npm run build`).
+* **Giai đoạn 1**: Sử dụng `node:22-alpine` để cài đặt dependencies (`npm ci`) và build ứng dụng Angular ở chế độ production (`npm run build`).
 * **Giai đoạn 2**: Sử dụng web server `nginx:alpine` siêu nhẹ để phục vụ các file tĩnh được build từ Angular. 
 * Sử dụng file cấu hình [angular-task/nginx.conf](file:///d:/TaskManager/angular-task/nginx.conf) để cấu hình định tuyến cho Single Page Application (tránh lỗi 404 khi người dùng tải lại trang web).
 
